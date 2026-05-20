@@ -221,11 +221,8 @@ app.post("/api/checkout", async (req, res) => {
 
         mode: "payment",
 
-        success_url:
-          "http://localhost:7000/success",
-
-        cancel_url:
-          "http://localhost:7000/cancel"
+      success_url: "https://kori-sellz.onrender.com/success",
+cancel_url: "https://kori-sellz.onrender.com/cancel"
       });
 
     res.json({ url: session.url });

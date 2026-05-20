@@ -134,7 +134,7 @@ app.post("/api/checkout", async (req, res) => {
 
       mode: "payment",
 
-      success_url: "https://kori-sellz.onrender.com/success",
+success_url: "https://kori-sellz.onrender.com/success",
 cancel_url: "https://kori-sellz.onrender.com/cancel"
     });
 

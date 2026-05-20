@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: korisellz-store
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: CJ_ACCESS_TOKEN
+        sync: false
+      - key: BASE_URL
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false

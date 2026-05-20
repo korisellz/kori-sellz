@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KoriSellz Tech Finds</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav>
+      <div class="logo">KoriSellz</div>
+      <button id="cartButton" class="cart-button">Cart <span id="cartCount">0</span></button>
+    </nav>
+
+    <div class="hero-content">
+      <p class="tag">Trending tech finds shipped to your door</p>
+      <h1>Affordable gadgets, clean deals, easy checkout.</h1>
+      <p class="subtext">Shop chargers, microphones, drones, and everyday tech accessories without the crazy markup.</p>
+      <a href="#products" class="shop-link">Shop now</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-title" id="products">
+      <h2>Featured Products</h2>
+      <p>Handpicked budget-friendly finds.</p>
+    </section>
+
+    <section id="productGrid" class="product-grid"></section>
+  </main>
+
+  <aside id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button id="closeCart">×</button>
+    </div>
+
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-footer">
+      <div class="total-row">
+        <span>Total</span>
+        <strong id="cartTotal">$0.00</strong>
+      </div>
+      <button id="checkoutButton" class="checkout-button">Checkout</button>
+    </div>
+  </aside>
+
+  <div id="overlay" class="overlay"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

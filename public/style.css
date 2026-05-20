@@ -1,0 +1,184 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0d1f;
+  color: white;
+}
+
+.hero {
+  background: linear-gradient(135deg, #151B54, #050716);
+  text-align: center;
+  padding: 35px 20px;
+}
+
+.logo {
+  font-size: 38px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.hero p {
+  color: #ddd;
+}
+
+input, select {
+  padding: 12px;
+  margin: 8px;
+  border-radius: 10px;
+  border: none;
+  width: 220px;
+}
+
+#products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  padding: 30px;
+}
+
+.card {
+  background: #15172e;
+  border: 1px solid #2f335f;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 10px 25px #0006;
+}
+
+.card img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  background: white;
+  border-radius: 14px;
+}
+
+.card h2 {
+  font-size: 18px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  color: #e6e6e6;
+}
+
+button {
+  background: #595959;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #777;
+}
+
+.cart-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #151B54;
+  border: 2px solid white;
+  font-size: 22px;
+  z-index: 10;
+}
+
+#cartPanel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 360px;
+  max-width: 90%;
+  height: 100%;
+  background: #111326;
+  padding: 25px;
+  box-shadow: -10px 0 30px #0008;
+  transition: right 0.3s ease;
+  z-index: 20;
+  overflow-y: auto;
+}
+
+#cartPanel.open {
+  right: 0;
+}
+
+.cart-item {
+  border-bottom: 1px solid #333;
+  padding: 12px 0;
+}
+
+.qty-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.qty-controls button {
+  padding: 6px 10px;
+}
+
+.remove-btn, .close-btn {
+  background: #8b1e1e;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .logo {
+    font-size: 30px;
+  }
+
+  input, select {
+    width: 90%;
+  }
+
+  #products {
+    padding: 15px;
+  }
+}
+.logo {
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 8px #ffffff55;
+  }
+  to {
+    text-shadow: 0 0 18px #ffffff, 0 0 28px #151B54;
+  }
+}
+
+.badge {
+  display: inline-block;
+  background: #ffffff18;
+  border: 1px solid #ffffff33;
+  padding: 6px 10px;
+  border-radius: 999px;
+  margin: 6px;
+  font-size: 13px;
+}
+
+.rating {
+  color: gold;
+  font-size: 18px;
+}
+
+.stock {
+  color: #9cffb1;
+  font-weight: bold;
+}
+
+.buy-now {
+  background: white;
+  color: #151B54;
+  margin-top: 8px;
+  font-weight: bold;
+}

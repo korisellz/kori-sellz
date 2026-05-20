@@ -6,19 +6,38 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log(
-  "Stripe key loaded?",
-  process.env.STRIPE_SECRET_KEY ? "YES" : "NO"
-);
-
-console.log(
-  "CJ token loaded?",
-  process.env.CJ_ACCESS_TOKEN ? "YES" : "NO"
-);
+console.log("Stripe key loaded?", process.env.STRIPE_SECRET_KEY ? "YES" : "NO");
+console.log("CJ token loaded?", process.env.CJ_ACCESS_TOKEN ? "YES" : "NO");
+console.log("Webhook secret loaded?", process.env.STRIPE_WEBHOOK_SECRET ? "YES" : "NO");
 
 const app = express();
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// WEBHOOK MUST COME BEFORE express.json()
+app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error("Webhook signature failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    console.log("✅ Payment confirmed:", session.id);
+    await fulfillOrder(session);
+  }
+
+  res.json({ received: true });
+});
 
 app.use(cors());
 app.use(express.json());
@@ -95,12 +114,32 @@ async function sendOrderToCJ(order) {
       }
     );
 
-    console.log("Sent to CJ:", response.data);
+    console.log("✅ Sent to CJ:", response.data);
   } catch (error) {
-    console.error(
-      "CJ Error:",
-      error.response?.data || error.message
-    );
+    console.error("CJ Error:", error.response?.data || error.message);
+  }
+}
+
+async function fulfillOrder(session) {
+  try {
+    const items = JSON.parse(session.metadata.items);
+    const shipping = session.customer_details?.address;
+
+    await sendOrderToCJ({
+      items,
+      shippingAddress: {
+        country: shipping?.country || "US",
+        state: shipping?.state || "",
+        city: shipping?.city || "",
+        address: shipping?.line1 || "",
+        address2: shipping?.line2 || "",
+        zip: shipping?.postal_code || ""
+      }
+    });
+
+    console.log("✅ Order forwarded to CJ successfully.");
+  } catch (error) {
+    console.error("Fulfillment Error:", error.message);
   }
 }
 
@@ -121,6 +160,17 @@ app.post("/api/checkout", async (req, res) => {
 
       customer_creation: "always",
 
+      metadata: {
+        items: JSON.stringify(
+          items.map((item) => ({
+            name: item.name,
+            sku: item.sku,
+            price: item.price,
+            quantity: item.quantity || 1
+          }))
+        )
+      },
+
       line_items: items.map((item) => ({
         price_data: {
           currency: "usd",
@@ -134,8 +184,8 @@ app.post("/api/checkout", async (req, res) => {
 
       mode: "payment",
 
-success_url: "https://kori-sellz.onrender.com/success",
-cancel_url: "https://kori-sellz.onrender.com/cancel"
+      success_url: "https://kori-sellz.onrender.com/success",
+      cancel_url: "https://kori-sellz.onrender.com/cancel"
     });
 
     res.json({ url: session.url });
@@ -149,17 +199,15 @@ cancel_url: "https://kori-sellz.onrender.com/cancel"
 });
 
 app.get("/success", (req, res) => {
-  res.send(
-    "Payment successful! Your order is being processed."
-  );
+  res.send("Payment successful! Your order is being processed.");
 });
 
 app.get("/cancel", (req, res) => {
   res.send("Payment canceled.");
 });
 
-app.listen(7000, () => {
-  console.log(
-    "✅ Server running on http://localhost:7000"
-  );
+const PORT = process.env.PORT || 7000;
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });

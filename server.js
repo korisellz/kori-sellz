@@ -123,25 +123,49 @@ async function sendOrderToCJ(order) {
 async function fulfillOrder(session) {
   try {
     const items = JSON.parse(session.metadata.items);
+
     const shipping = session.customer_details?.address;
 
-    await sendOrderToCJ({
-      items,
-      shippingAddress: {
-        country: shipping?.country || "US",
-        state: shipping?.state || "",
-        city: shipping?.city || "",
-        address: shipping?.line1 || "",
-        address2: shipping?.line2 || "",
-        zip: shipping?.postal_code || ""
-      }
-    });
+    const response = await axios.post(
+      "https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/createOrderV2",
+      {
+        products: items.map((item) => ({
+          productName: item.name,
+          sku: item.sku,
+          quantity: item.quantity || 1
+        })),
 
-    console.log("✅ Order forwarded to CJ successfully.");
+        shippingAddress: {
+          country: shipping?.country || "US",
+          state: shipping?.state || "",
+          city: shipping?.city || "",
+          address: shipping?.line1 || "",
+          address2: shipping?.line2 || "",
+          zip: shipping?.postal_code || ""
+        }
+      },
+
+      {
+        headers: {
+          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+        }
+      }
+    );
+
+    console.log("✅ Order forwarded to CJ");
+
+    const cjOrderId = response.data?.data?.orderId;
+
+    console.log("📦 CJ Order ID:", cjOrderId);
+
   } catch (error) {
-    console.error("Fulfillment Error:", error.message);
+    console.error(
+      "Fulfillment Error:",
+      error.response?.data || error.message
+    );
   }
 }
+
 
 app.post("/api/checkout", async (req, res) => {
   try {
@@ -204,6 +228,29 @@ app.get("/success", (req, res) => {
 
 app.get("/cancel", (req, res) => {
   res.send("Payment canceled.");
+});
+
+
+app.get("/api/track/:orderId", async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/getOrderDetail?orderId=${req.params.orderId}`,
+      {
+        headers: {
+          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+
+    res.status(500).json({
+      error: "Tracking lookup failed"
+    });
+  }
 });
 
 const PORT = process.env.PORT || 7000;

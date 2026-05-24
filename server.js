@@ -237,7 +237,11 @@ async function sendOrderToCJ(order) {
 async function fulfillOrder(session) {
   try {
     const items = JSON.parse(session.metadata.items);
-
+if (!session.livemode) {
+  console.log("🧪 Stripe test payment detected — skipping real CJ order creation.");
+  console.log("🧪 Test order items:", items);
+  return;
+}
     const shipping =
       session.collected_information?.shipping_details?.address ||
       session.customer_details?.address;

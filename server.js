@@ -7,37 +7,77 @@ import dotenv from "dotenv";
 dotenv.config();
 
 console.log("Stripe key loaded?", process.env.STRIPE_SECRET_KEY ? "YES" : "NO");
-console.log("CJ token loaded?", process.env.CJ_ACCESS_TOKEN ? "YES" : "NO");
-console.log("Webhook secret loaded?", process.env.STRIPE_WEBHOOK_SECRET ? "YES" : "NO");
+console.log("Stripe webhook secret loaded?", process.env.STRIPE_WEBHOOK_SECRET ? "YES" : "NO");
+console.log("CJ API key loaded?", process.env.CJ_API_KEY ? "YES" : "NO");
 
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// WEBHOOK MUST COME BEFORE express.json()
-app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
+const SITE_URL = process.env.SITE_URL || "https://kori-sellz.onrender.com";
 
-  let event;
+let cachedCJAccessToken = null;
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error("Webhook signature failed:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+// Gets a fresh CJ access token from your CJ API key
+async function getCJAccessToken() {
+  if (cachedCJAccessToken) {
+    return cachedCJAccessToken;
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    console.log("✅ Payment confirmed:", session.id);
-    await fulfillOrder(session);
+  const response = await axios.post(
+    "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
+    {
+      apiKey: process.env.CJ_API_KEY
+    },
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  if (!response.data?.data?.accessToken) {
+    throw new Error(`CJ auth failed: ${JSON.stringify(response.data)}`);
   }
 
-  res.json({ received: true });
-});
+  cachedCJAccessToken = response.data.data.accessToken;
+
+  console.log("✅ CJ access token generated");
+
+  return cachedCJAccessToken;
+}
+
+// IMPORTANT: Stripe webhook MUST come before express.json()
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const sig = req.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error("Webhook signature failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+
+      console.log("🔥 WEBHOOK TRIGGERED");
+      console.log("✅ Payment confirmed:", session.id);
+
+      await fulfillOrder(session);
+    }
+
+    res.json({ received: true });
+  }
+);
 
 app.use(cors());
 app.use(express.json());
@@ -95,69 +135,109 @@ app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
-async function sendOrderToCJ(order) {
+// Test whether CJ API key can create a real access token
+app.get("/cj-auth-test", async (req, res) => {
   try {
-    const response = await axios.post(
-      "https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/createOrderV2",
-      {
-        products: order.items.map((item) => ({
-          productName: item.name,
-          sku: item.sku,
-          quantity: item.quantity || 1
-        })),
-        shippingAddress: order.shippingAddress
-      },
+    const token = await getCJAccessToken();
+
+    res.json({
+      success: true,
+      message: "CJ auth worked",
+      accessTokenPreview: token.slice(0, 6) + "..." + token.slice(-6)
+    });
+  } catch (error) {
+    console.error("CJ auth test error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+// Test whether CJ token can access CJ product API
+app.get("/cj-token-test", async (req, res) => {
+  try {
+    const token = await getCJAccessToken();
+
+    const response = await axios.get(
+      "https://developers.cjdropshipping.com/api2.0/v1/product/listV2?page=1&size=1",
       {
         headers: {
-          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+          "CJ-Access-Token": token
         }
       }
     );
 
-    console.log("✅ Sent to CJ:", response.data);
+    res.json({
+      success: true,
+      message: "CJ token worked",
+      data: response.data
+    });
   } catch (error) {
-    console.error("CJ Error:", error.response?.data || error.message);
+    console.error("CJ token test error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
   }
+});
+
+async function sendOrderToCJ(order) {
+  const token = await getCJAccessToken();
+
+  const response = await axios.post(
+    "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2",
+    {
+      products: order.items.map((item) => ({
+        productName: item.name,
+        sku: item.sku,
+        quantity: item.quantity || 1
+      })),
+
+      shippingAddress: order.shippingAddress
+    },
+    {
+      headers: {
+        "CJ-Access-Token": token
+      }
+    }
+  );
+
+  console.log("✅ Sent to CJ:", response.data);
+
+  return response.data;
 }
 
 async function fulfillOrder(session) {
   try {
     const items = JSON.parse(session.metadata.items);
 
-    const shipping = session.customer_details?.address;
+    const shipping =
+      session.collected_information?.shipping_details?.address ||
+      session.customer_details?.address;
 
-    const response = await axios.post(
-      "https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/createOrderV2",
-      {
-        products: items.map((item) => ({
-          productName: item.name,
-          sku: item.sku,
-          quantity: item.quantity || 1
-        })),
-
-        shippingAddress: {
-          country: shipping?.country || "US",
-          state: shipping?.state || "",
-          city: shipping?.city || "",
-          address: shipping?.line1 || "",
-          address2: shipping?.line2 || "",
-          zip: shipping?.postal_code || ""
-        }
-      },
-
-      {
-        headers: {
-          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
-        }
+    const cjResponse = await sendOrderToCJ({
+      items,
+      shippingAddress: {
+        country: shipping?.country || "US",
+        state: shipping?.state || "",
+        city: shipping?.city || "",
+        address: shipping?.line1 || "",
+        address2: shipping?.line2 || "",
+        zip: shipping?.postal_code || ""
       }
-    );
+    });
 
-    console.log("✅ Order forwarded to CJ");
-
-    const cjOrderId = response.data?.data?.orderId;
+    const cjOrderId =
+      cjResponse?.data?.orderId ||
+      cjResponse?.data?.orderNum ||
+      cjResponse?.data?.id ||
+      "No CJ order ID found in response";
 
     console.log("📦 CJ Order ID:", cjOrderId);
-
+    console.log("✅ Order forwarded to CJ successfully.");
   } catch (error) {
     console.error(
       "Fulfillment Error:",
@@ -165,7 +245,6 @@ async function fulfillOrder(session) {
     );
   }
 }
-
 
 app.post("/api/checkout", async (req, res) => {
   try {
@@ -208,8 +287,8 @@ app.post("/api/checkout", async (req, res) => {
 
       mode: "payment",
 
-      success_url: "https://kori-sellz.onrender.com/success",
-      cancel_url: "https://kori-sellz.onrender.com/cancel"
+      success_url: `${SITE_URL}/success`,
+      cancel_url: `${SITE_URL}/cancel`
     });
 
     res.json({ url: session.url });
@@ -221,67 +300,37 @@ app.post("/api/checkout", async (req, res) => {
     });
   }
 });
-app.get("/cj-token-test", async (req, res) => {
+
+app.get("/api/track/:orderId", async (req, res) => {
   try {
+    const token = await getCJAccessToken();
+
     const response = await axios.get(
-      "https://developers.cjdropshipping.cn/api2.0/v1/product/list?pageNum=1&pageSize=1",
+      `https://developers.cjdropshipping.com/api2.0/v1/shopping/order/getOrderDetail?orderId=${req.params.orderId}`,
       {
         headers: {
-          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+          "CJ-Access-Token": token
         }
       }
     );
 
-    console.log("✅ CJ Connected");
-
-    res.json({
-      success: true,
-      data: response.data
-    });
-
+    res.json(response.data);
   } catch (error) {
-
-    console.error(
-      "❌ CJ TEST ERROR:",
-      error.response?.data || error.message
-    );
+    console.error("Tracking error:", error.response?.data || error.message);
 
     res.status(500).json({
-      error:
-        error.response?.data ||
-        error.message
+      error: "Tracking lookup failed",
+      details: error.response?.data || error.message
     });
   }
 });
+
 app.get("/success", (req, res) => {
   res.send("Payment successful! Your order is being processed.");
 });
 
 app.get("/cancel", (req, res) => {
   res.send("Payment canceled.");
-});
-
-
-app.get("/api/track/:orderId", async (req, res) => {
-  try {
-    const response = await axios.get(
-      `https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/getOrderDetail?orderId=${req.params.orderId}`,
-      {
-        headers: {
-          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
-        }
-      }
-    );
-
-    res.json(response.data);
-
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-
-    res.status(500).json({
-      error: "Tracking lookup failed"
-    });
-  }
 });
 
 const PORT = process.env.PORT || 7000;

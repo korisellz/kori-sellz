@@ -17,7 +17,6 @@ const SITE_URL = process.env.SITE_URL || "https://kori-sellz.onrender.com";
 
 let cachedCJAccessToken = null;
 
-// Gets a fresh CJ access token from your CJ API key
 async function getCJAccessToken() {
   if (cachedCJAccessToken) {
     return cachedCJAccessToken;
@@ -46,7 +45,7 @@ async function getCJAccessToken() {
   return cachedCJAccessToken;
 }
 
-// IMPORTANT: Stripe webhook MUST come before express.json()
+// Stripe webhook MUST stay before express.json()
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
@@ -135,7 +134,6 @@ app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
-// Test whether CJ API key can create a real access token
 app.get("/cj-auth-test", async (req, res) => {
   try {
     const token = await getCJAccessToken();
@@ -155,7 +153,6 @@ app.get("/cj-auth-test", async (req, res) => {
   }
 });
 
-// Test whether CJ token can access CJ product API
 app.get("/cj-token-test", async (req, res) => {
   try {
     const token = await getCJAccessToken();
@@ -187,25 +184,52 @@ app.get("/cj-token-test", async (req, res) => {
 async function sendOrderToCJ(order) {
   const token = await getCJAccessToken();
 
+  const payload = {
+    orderNumber: order.orderNumber,
+
+    shippingZip: order.shippingAddress.zip,
+    shippingCountry: "United States",
+    shippingCountryCode: "US",
+    shippingProvince: order.shippingAddress.state,
+    shippingCity: order.shippingAddress.city,
+    shippingCounty: "",
+    shippingPhone: order.phone || "0000000000",
+    shippingCustomerName: order.customerName || "Kori Sellz Customer",
+    shippingAddress: order.shippingAddress.address,
+    shippingAddress2: order.shippingAddress.address2 || "",
+
+    email: order.email || "",
+    remark: "Kori Sellz order from Stripe",
+
+    logisticName: "CJPacket Ordinary",
+    fromCountryCode: "CN",
+
+    products: order.items.map((item, index) => ({
+      sku: item.sku,
+      quantity: item.quantity || 1,
+      unitPrice: item.price,
+      storeLineItemId: `${order.orderNumber}-${index + 1}`
+    }))
+  };
+
+  console.log("📦 CJ payload being sent:", JSON.stringify(payload, null, 2));
+
   const response = await axios.post(
     "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2",
-    {
-      products: order.items.map((item) => ({
-        productName: item.name,
-        sku: item.sku,
-        quantity: item.quantity || 1
-      })),
-
-      shippingAddress: order.shippingAddress
-    },
+    payload,
     {
       headers: {
-        "CJ-Access-Token": token
+        "CJ-Access-Token": token,
+        "Content-Type": "application/json"
       }
     }
   );
 
-  console.log("✅ Sent to CJ:", response.data);
+  console.log("✅ CJ response:", response.data);
+
+  if (!response.data?.result) {
+    throw new Error(`CJ rejected order: ${JSON.stringify(response.data)}`);
+  }
 
   return response.data;
 }
@@ -218,8 +242,16 @@ async function fulfillOrder(session) {
       session.collected_information?.shipping_details?.address ||
       session.customer_details?.address;
 
+    const orderNumber = `KS-${session.id.slice(-20)}`;
+
     const cjResponse = await sendOrderToCJ({
+      orderNumber,
       items,
+
+      customerName: session.customer_details?.name,
+      email: session.customer_details?.email,
+      phone: session.customer_details?.phone,
+
       shippingAddress: {
         country: shipping?.country || "US",
         state: shipping?.state || "",
@@ -234,6 +266,7 @@ async function fulfillOrder(session) {
       cjResponse?.data?.orderId ||
       cjResponse?.data?.orderNum ||
       cjResponse?.data?.id ||
+      cjResponse?.data?.cjOrderId ||
       "No CJ order ID found in response";
 
     console.log("📦 CJ Order ID:", cjOrderId);
@@ -249,6 +282,12 @@ async function fulfillOrder(session) {
 app.post("/api/checkout", async (req, res) => {
   try {
     const items = req.body.items;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        error: "Cart is empty"
+      });
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -326,11 +365,19 @@ app.get("/api/track/:orderId", async (req, res) => {
 });
 
 app.get("/success", (req, res) => {
-  res.send("Payment successful! Your order is being processed.");
+  res.send(`
+    <h1>Payment successful!</h1>
+    <p>Your order is being processed.</p>
+    <a href="/">Return to Kori Sellz</a>
+  `);
 });
 
 app.get("/cancel", (req, res) => {
-  res.send("Payment canceled.");
+  res.send(`
+    <h1>Payment canceled</h1>
+    <p>Your order was not completed.</p>
+    <a href="/">Return to Kori Sellz</a>
+  `);
 });
 
 const PORT = process.env.PORT || 7000;

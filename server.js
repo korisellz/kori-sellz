@@ -14,6 +14,7 @@ console.log(
 );
 console.log("CJ API key loaded?", process.env.CJ_API_KEY ? "YES" : "NO");
 console.log("Resend key loaded?", process.env.RESEND_API_KEY ? "YES" : "NO");
+console.log("Admin password loaded?", process.env.ADMIN_PASSWORD ? "YES" : "NO");
 
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -22,6 +23,58 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.SITE_URL || "https://kori-sellz.onrender.com";
 
 let cachedCJAccessToken = null;
+
+// Temporary in-memory order storage.
+// Later, we can replace this with a real database.
+const orders = [];
+
+const products = [
+  {
+    id: 1,
+    name: "Type-C to HDMI VGA 5-in-1 Dual Display Converter",
+    sku: "CJXFJTDS00064-Black",
+    cost: 12.78,
+    price: 29.99,
+    image:
+      "https://cf.cjdropshipping.com/203106/3190218982082.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 2,
+    name: "4-in-1 Magnetic Wireless Charging Station",
+    sku: "CJYD179346901AZ",
+    cost: 12.37,
+    price: 29.99,
+    image:
+      "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_300,h_300/sharpen,100/format,jpg"
+  },
+  {
+    id: 3,
+    name: "V14 Professional 6K HD Dual Camera Drone - 2 Batteries",
+    sku: "CJWR241970801AZ",
+    cost: 35.0,
+    price: 69.99,
+    image:
+      "https://cf.cjdropshipping.com/66ca3586-f363-4d10-b446-b93451e9f6a4.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 4,
+    name: "V14 Professional 6K HD Dual Camera Drone - 3 Batteries",
+    sku: "CJWR241970802BY",
+    cost: 39.0,
+    price: 79.99,
+    image:
+      "https://cf.cjdropshipping.com/04df2447-39a4-4c05-8b0e-c2250546f1a1.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 5,
+    name: "Wireless Lavalier Microphone for iPhone",
+    sku: "CJMK1698386-2in1 for IOS",
+    cost: 10.98,
+    price: 24.99,
+    image:
+      "https://cf.cjdropshipping.com/adbc5add-bd51-4328-84c4-106e8c198890.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  }
+];
 
 async function getCJAccessToken() {
   if (cachedCJAccessToken) {
@@ -87,54 +140,6 @@ app.post(
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
-
-const products = [
-  {
-    id: 1,
-    name: "Type-C to HDMI VGA 5-in-1 Dual Display Converter",
-    sku: "CJXFJTDS00064-Black",
-    cost: 12.78,
-    price: 29.99,
-    image:
-      "https://cf.cjdropshipping.com/203106/3190218982082.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
-  },
-  {
-    id: 2,
-    name: "4-in-1 Magnetic Wireless Charging Station",
-    sku: "CJYD179346901AZ",
-    cost: 12.37,
-    price: 29.99,
-    image:
-      "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_300,h_300/sharpen,100/format,jpg"
-  },
-  {
-    id: 3,
-    name: "V14 Professional 6K HD Dual Camera Drone - 2 Batteries",
-    sku: "CJWR241970801AZ",
-    cost: 35.0,
-    price: 69.99,
-    image:
-      "https://cf.cjdropshipping.com/66ca3586-f363-4d10-b446-b93451e9f6a4.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
-  },
-  {
-    id: 4,
-    name: "V14 Professional 6K HD Dual Camera Drone - 3 Batteries",
-    sku: "CJWR241970802BY",
-    cost: 39.0,
-    price: 79.99,
-    image:
-      "https://cf.cjdropshipping.com/04df2447-39a4-4c05-8b0e-c2250546f1a1.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
-  },
-  {
-    id: 5,
-    name: "Wireless Lavalier Microphone for iPhone",
-    sku: "CJMK1698386-2in1 for IOS",
-    cost: 10.98,
-    price: 24.99,
-    image:
-      "https://cf.cjdropshipping.com/adbc5add-bd51-4328-84c4-106e8c198890.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
-  }
-];
 
 app.get("/api/products", (req, res) => {
   res.json(products);
@@ -252,7 +257,12 @@ async function sendCustomerConfirmationEmail(session, items) {
       `
     });
 
-    console.log("✅ Confirmation email sent:", emailResponse);
+    if (emailResponse.error) {
+      console.error("Email Error:", emailResponse.error);
+      return;
+    }
+
+    console.log("✅ Confirmation email sent:", emailResponse.data);
   } catch (error) {
     console.error("Email Error:", error.message);
   }
@@ -312,12 +322,33 @@ async function sendOrderToCJ(order) {
 }
 
 async function fulfillOrder(session) {
+  let baseOrderRecord = null;
+
   try {
     const items = JSON.parse(session.metadata.items);
+
+    baseOrderRecord = {
+      stripeSessionId: session.id,
+      customerName: session.customer_details?.name || "",
+      customerEmail: session.customer_details?.email || "",
+      customerPhone: session.customer_details?.phone || "",
+      amountTotal: session.amount_total ? session.amount_total / 100 : 0,
+      currency: session.currency || "usd",
+      items,
+      livemode: session.livemode,
+      createdAt: new Date().toISOString(),
+      status: "Payment confirmed",
+      cjOrderId: null
+    };
 
     await sendCustomerConfirmationEmail(session, items);
 
     if (!session.livemode) {
+      orders.unshift({
+        ...baseOrderRecord,
+        status: "Test payment - CJ skipped"
+      });
+
       console.log("🧪 Stripe test payment detected — skipping real CJ order creation.");
       console.log("🧪 Test order items:", items);
       return;
@@ -354,10 +385,26 @@ async function fulfillOrder(session) {
       cjResponse?.data?.cjOrderId ||
       "No CJ order ID found in response";
 
+    orders.unshift({
+      ...baseOrderRecord,
+      status: "Forwarded to CJ",
+      cjOrderId
+    });
+
     console.log("📦 CJ Order ID:", cjOrderId);
     console.log("✅ Order forwarded to CJ successfully.");
   } catch (error) {
-    console.error("Fulfillment Error:", error.response?.data || error.message);
+    const errorMessage = error.response?.data || error.message;
+
+    if (baseOrderRecord) {
+      orders.unshift({
+        ...baseOrderRecord,
+        status: "Fulfillment error",
+        error: errorMessage
+      });
+    }
+
+    console.error("Fulfillment Error:", errorMessage);
   }
 }
 
@@ -444,6 +491,21 @@ app.get("/api/track/:orderId", async (req, res) => {
       details: error.response?.data || error.message
     });
   }
+});
+
+app.get("/api/admin/orders", (req, res) => {
+  const password = req.query.password;
+
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({
+      error: "Unauthorized"
+    });
+  }
+
+  res.json({
+    success: true,
+    orders
+  });
 });
 
 app.get("/success", (req, res) => {

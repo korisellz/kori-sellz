@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kori Sellz Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="logo">Kori Sellz Admin</div>
+    <p>View recent orders.</p>
+    <a class="track-link" href="/">Return to Store</a>
+  </header>
+
+  <main class="tracking-page">
+    <div class="tracking-box" style="max-width: 900px;">
+      <h2>Admin Dashboard</h2>
+
+      <input id="passwordInput" type="password" placeholder="Admin password">
+      <button onclick="loadOrders()">Load Orders</button>
+
+      <div id="ordersResult"></div>
+    </div>
+  </main>
+
+  <script>
+    async function loadOrders() {
+      const password = document.getElementById("passwordInput").value.trim();
+      const resultBox = document.getElementById("ordersResult");
+
+      if (!password) {
+        resultBox.innerHTML = "<p>Please enter your admin password.</p>";
+        return;
+      }
+
+      resultBox.innerHTML = "<p>Loading orders...</p>";
+
+      try {
+        const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(password)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          resultBox.innerHTML = "<p>Incorrect password or unable to load orders.</p>";
+          return;
+        }
+
+        if (!data.orders.length) {
+          resultBox.innerHTML = "<p>No orders found yet.</p>";
+          return;
+        }
+
+        resultBox.innerHTML = data.orders.map(order => `
+          <div class="tracking-card">
+            <h3>${order.customerName || "Customer"}</h3>
+            <p><strong>Email:</strong> ${order.customerEmail || "N/A"}</p>
+            <p><strong>Phone:</strong> ${order.customerPhone || "N/A"}</p>
+            <p><strong>Total:</strong> $${Number(order.amountTotal || 0).toFixed(2)} ${String(order.currency || "usd").toUpperCase()}</p>
+            <p><strong>Status:</strong> ${order.status}</p>
+            <p><strong>Stripe Session:</strong> ${order.stripeSessionId}</p>
+            <p><strong>CJ Order ID:</strong> ${order.cjOrderId || "N/A"}</p>
+            <p><strong>Mode:</strong> ${order.livemode ? "Live" : "Test"}</p>
+            <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+
+            <h4>Items</h4>
+            <ul>
+              ${order.items.map(item => `
+                <li>${item.name} — Qty: ${item.quantity || 1} — $${item.price}</li>
+              `).join("")}
+            </ul>
+          </div>
+        `).join("");
+      } catch (error) {
+        resultBox.innerHTML = "<p>Something went wrong loading orders.</p>";
+      }
+    }
+  </script>
+</body>
+</html>

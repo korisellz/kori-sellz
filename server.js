@@ -1,4 +1,4 @@
-async function initDatabase() {
+﻿async function initDatabase() {
   if (!pool) {
     console.log("No DATABASE_URL found. Database disabled.");
     return;
@@ -23,5 +23,5 @@ async function initDatabase() {
 
   await pool.query(createOrdersTableSQL);
 
-  console.log("✅ Database ready");
+  console.log("âœ… Database ready");
 }

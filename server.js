@@ -221,7 +221,38 @@ app.post("/api/checkout", async (req, res) => {
     });
   }
 });
+app.get("/cj-token-test", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://developers.cjdropshipping.cn/api2.0/v1/product/list?pageNum=1&pageSize=1",
+      {
+        headers: {
+          "CJ-Access-Token": process.env.CJ_ACCESS_TOKEN
+        }
+      }
+    );
 
+    console.log("✅ CJ Connected");
+
+    res.json({
+      success: true,
+      data: response.data
+    });
+
+  } catch (error) {
+
+    console.error(
+      "❌ CJ TEST ERROR:",
+      error.response?.data || error.message
+    );
+
+    res.status(500).json({
+      error:
+        error.response?.data ||
+        error.message
+    });
+  }
+});
 app.get("/success", (req, res) => {
   res.send("Payment successful! Your order is being processed.");
 });

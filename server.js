@@ -3,15 +3,21 @@ import cors from "cors";
 import Stripe from "stripe";
 import axios from "axios";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 
 dotenv.config();
 
 console.log("Stripe key loaded?", process.env.STRIPE_SECRET_KEY ? "YES" : "NO");
-console.log("Stripe webhook secret loaded?", process.env.STRIPE_WEBHOOK_SECRET ? "YES" : "NO");
+console.log(
+  "Stripe webhook secret loaded?",
+  process.env.STRIPE_WEBHOOK_SECRET ? "YES" : "NO"
+);
 console.log("CJ API key loaded?", process.env.CJ_API_KEY ? "YES" : "NO");
+console.log("Resend key loaded?", process.env.RESEND_API_KEY ? "YES" : "NO");
 
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const SITE_URL = process.env.SITE_URL || "https://kori-sellz.onrender.com";
 
@@ -181,6 +187,77 @@ app.get("/cj-token-test", async (req, res) => {
   }
 });
 
+async function sendCustomerConfirmationEmail(session, items) {
+  try {
+    const customerEmail = session.customer_details?.email;
+    const customerName = session.customer_details?.name || "there";
+
+    if (!customerEmail) {
+      console.log("No customer email found. Skipping email.");
+      return;
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+      console.log("No Resend API key found. Skipping email.");
+      return;
+    }
+
+    const itemsHtml = items
+      .map(
+        (item) => `
+          <li style="margin-bottom:10px;">
+            <strong>${item.name}</strong><br>
+            Quantity: ${item.quantity || 1}<br>
+            Price: $${Number(item.price).toFixed(2)}
+          </li>
+        `
+      )
+      .join("");
+
+    const emailResponse = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
+      to: customerEmail,
+      subject: "Your Kori Sellz order is confirmed 💙",
+      html: `
+        <div style="font-family: Arial, sans-serif; background:#0b0d1f; color:white; padding:30px;">
+          <div style="max-width:600px; margin:auto; background:#15172e; padding:25px; border-radius:18px;">
+            <h1 style="color:white;">Thank you for shopping with Kori Sellz!</h1>
+
+            <p>Hi ${customerName},</p>
+
+            <p>Your payment was successful and your order is now being processed.</p>
+
+            <h2>Order Summary</h2>
+
+            <ul style="padding-left:20px;">
+              ${itemsHtml}
+            </ul>
+
+            <p>You’ll receive tracking information once your order ships.</p>
+
+            <p>You can track your order here:</p>
+
+            <a href="${SITE_URL}/track.html"
+              style="display:inline-block; background:white; color:#151B54; padding:12px 18px; border-radius:10px; text-decoration:none; font-weight:bold;">
+              Track My Order
+            </a>
+
+            <p style="margin-top:25px;">Thank you for supporting Kori Sellz 💙</p>
+
+            <p style="color:#aaa; font-size:13px;">
+              This is an automated confirmation email.
+            </p>
+          </div>
+        </div>
+      `
+    });
+
+    console.log("✅ Confirmation email sent:", emailResponse);
+  } catch (error) {
+    console.error("Email Error:", error.message);
+  }
+}
+
 async function sendOrderToCJ(order) {
   const token = await getCJAccessToken();
 
@@ -237,11 +314,15 @@ async function sendOrderToCJ(order) {
 async function fulfillOrder(session) {
   try {
     const items = JSON.parse(session.metadata.items);
-if (!session.livemode) {
-  console.log("🧪 Stripe test payment detected — skipping real CJ order creation.");
-  console.log("🧪 Test order items:", items);
-  return;
-}
+
+    await sendCustomerConfirmationEmail(session, items);
+
+    if (!session.livemode) {
+      console.log("🧪 Stripe test payment detected — skipping real CJ order creation.");
+      console.log("🧪 Test order items:", items);
+      return;
+    }
+
     const shipping =
       session.collected_information?.shipping_details?.address ||
       session.customer_details?.address;
@@ -276,10 +357,7 @@ if (!session.livemode) {
     console.log("📦 CJ Order ID:", cjOrderId);
     console.log("✅ Order forwarded to CJ successfully.");
   } catch (error) {
-    console.error(
-      "Fulfillment Error:",
-      error.response?.data || error.message
-    );
+    console.error("Fulfillment Error:", error.response?.data || error.message);
   }
 }
 
@@ -372,6 +450,9 @@ app.get("/success", (req, res) => {
   res.send(`
     <h1>Payment successful!</h1>
     <p>Your order is being processed.</p>
+    <p>You can track your order once tracking becomes available.</p>
+    <a href="/track.html">Track Order</a>
+    <br><br>
     <a href="/">Return to Kori Sellz</a>
   `);
 });

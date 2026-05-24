@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Track Order | Kori Sellz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="logo">Kori Sellz</div>
+    <p>Track your order below.</p>
+    <a class="track-link" href="/">Return to Store</a>
+  </header>
+
+  <main class="tracking-page">
+    <div class="tracking-box">
+      <h2>Track Your Order</h2>
+      <p>Enter your CJ order code or order number.</p>
+
+      <input id="orderIdInput" placeholder="Example: SD26052421330806439001">
+      <button onclick="trackOrder()">Track Order</button>
+
+      <div id="trackingResult"></div>
+    </div>
+  </main>
+
+  <script>
+    async function trackOrder() {
+      const orderId = document.getElementById("orderIdInput").value.trim();
+      const resultBox = document.getElementById("trackingResult");
+
+      if (!orderId) {
+        resultBox.innerHTML = "<p>Please enter an order number.</p>";
+        return;
+      }
+
+      resultBox.innerHTML = "<p>Checking order...</p>";
+
+      try {
+        const res = await fetch(`/api/track/${encodeURIComponent(orderId)}`);
+        const data = await res.json();
+
+        if (!data.result) {
+          resultBox.innerHTML = `
+            <p>We could not find that order yet.</p>
+            <p>Please double-check the number or try again later.</p>
+          `;
+          return;
+        }
+
+        const order = data.data;
+
+        resultBox.innerHTML = `
+          <div class="tracking-card">
+            <h3>Order Found</h3>
+            <p><strong>Status:</strong> ${order.orderStatus || "Processing"}</p>
+            <p><strong>Order Number:</strong> ${order.orderNum || "N/A"}</p>
+            <p><strong>CJ Order Code:</strong> ${order.cjOrderCode || "N/A"}</p>
+            <p><strong>Shipping Method:</strong> ${order.logisticName || "Not assigned yet"}</p>
+            <p><strong>Tracking Number:</strong> ${order.trackNumber || "Not available yet"}</p>
+            ${
+              order.trackingUrl
+                ? `<a href="${order.trackingUrl}" target="_blank">View Tracking</a>`
+                : `<p>Tracking link is not available yet.</p>`
+            }
+          </div>
+        `;
+      } catch (error) {
+        resultBox.innerHTML = "<p>Tracking lookup failed. Please try again later.</p>";
+      }
+    }
+  </script>
+</body>
+</html>

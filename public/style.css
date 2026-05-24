@@ -182,3 +182,42 @@ button:hover {
   margin-top: 8px;
   font-weight: bold;
 }
+.track-link {
+  display: inline-block;
+  color: white;
+  text-decoration: none;
+  border: 1px solid white;
+  padding: 10px 16px;
+  border-radius: 999px;
+  margin-top: 10px;
+}
+
+.tracking-page {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.tracking-box {
+  background: #15172e;
+  border: 1px solid #2f335f;
+  border-radius: 18px;
+  padding: 25px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 10px 25px #0006;
+}
+
+.tracking-box input {
+  width: 100%;
+  margin: 15px 0;
+}
+
+.tracking-card {
+  background: #0b0d1f;
+  border-radius: 14px;
+  padding: 18px;
+  margin-top: 20px;
+  text-align: left;
+}

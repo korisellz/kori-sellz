@@ -3,6 +3,11 @@ let cart = [];
 
 async function loadProducts() {
   const res = await fetch("/api/products");
+
+  if (!res.ok) {
+    throw new Error("Products API failed");
+  }
+
   products = await res.json();
 
 products = products.map((product) => ({
@@ -181,4 +186,13 @@ async function checkout() {
   }
 }
 
-loadProducts();
+loadProducts().catch((error) => {
+  console.error("Products failed to load:", error);
+
+  document.getElementById("products").innerHTML = `
+    <div class="card">
+      <h2>Products failed to load</h2>
+      <p>Please refresh the page or try again soon.</p>
+    </div>
+  `;
+});

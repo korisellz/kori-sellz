@@ -582,3 +582,27 @@ button:hover {
     padding: 9px 10px;
   }
 }
+.trust-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 10px 30px 40px;
+}
+
+.trust-card {
+  background: #15172e;
+  border: 1px solid #2f335f;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 10px 25px #0006;
+}
+
+.trust-card h3 {
+  margin-top: 0;
+  color: white;
+}
+
+.trust-card p {
+  color: #ddd;
+}

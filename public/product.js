@@ -12,6 +12,7 @@ const productDescriptions = {
   9: "Detangle and massage your scalp with this electric hair brush designed to smooth knots while giving a relaxing scalp massage.",
   10: "Stay organized with this multi-function charging cable storage box. It keeps cables neat while supporting fast charging on the go."
 };
+
 const productReviews = {
   1: [
     "Works great for my laptop setup. Super helpful for connecting to my monitor.",
@@ -54,19 +55,27 @@ const productReviews = {
     "Perfect for travel and my purse."
   ]
 };
+
 function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return Number(params.get("id"));
 }
 
 function getDescription(product) {
-  return productDescriptions[product.id] || "A trending Kori Sellz product selected for everyday convenience, style, and value.";
+  return (
+    productDescriptions[product.id] ||
+    "A trending Kori Sellz product selected for everyday convenience, style, and value."
+  );
 }
 
 function getShippingEstimate(product) {
-  if (product.category === "Drones & Cameras") {
-    return "Estimated delivery: 7-15 business days after processing.";
+  if (product.category === "Beauty") {
+    return "Estimated delivery: 7-14 business days after processing.";
   }
+
+  return "Estimated delivery: 7-15 business days after processing.";
+}
+
 function renderReviews(product) {
   const reviews = productReviews[product.id] || [
     "Great product and easy checkout experience.",
@@ -85,12 +94,6 @@ function renderReviews(product) {
     )
     .join("");
 }
-  if (product.category === "Beauty") {
-    return "Estimated delivery: 7-14 business days after processing.";
-  }
-
-  return "Estimated delivery: 7-15 business days after processing.";
-}
 
 function getStockText(product) {
   const inventory = product.inventory || 12;
@@ -104,6 +107,11 @@ function getStockText(product) {
 
 async function loadProductPage() {
   const res = await fetch("/api/products");
+
+  if (!res.ok) {
+    throw new Error("Products API failed to load.");
+  }
+
   products = await res.json();
 
   products = products.map((product) => ({
@@ -144,7 +152,7 @@ function renderProduct(product) {
         <h1>${product.name}</h1>
 
         <div class="rating">★★★★★</div>
-        <p class="review-note">No verified customer reviews yet. Be the first to try it.</p>
+        <p class="review-note">${product.rating}/5 average rating</p>
 
         <p class="detail-price">$${product.price.toFixed(2)}</p>
 
@@ -166,18 +174,24 @@ function renderProduct(product) {
           <p>Order confirmation sent by email after purchase.</p>
           <p>Tracking available once the order ships.</p>
         </div>
+
+        <div class="reviews-section">
+          <h3>Customer Reviews</h3>
+          <p class="review-summary">★★★★★ ${product.rating}/5 average rating</p>
+          ${renderReviews(product)}
+        </div>
       </div>
     </div>
   `;
 }
-<div class="reviews-section">
-  <h3>Customer Reviews</h3>
-  <p class="review-summary">★★★★★ ${product.rating}/5 average rating</p>
-  ${renderReviews(product)}
-</div>
+
 function renderRelatedProducts(currentProduct) {
   const related = products
-    .filter((product) => product.id !== currentProduct.id && product.category === currentProduct.category)
+    .filter(
+      (product) =>
+        product.id !== currentProduct.id &&
+        product.category === currentProduct.category
+    )
     .slice(0, 3);
 
   const fallback = products
@@ -189,7 +203,7 @@ function renderRelatedProducts(currentProduct) {
   document.getElementById("relatedProducts").innerHTML = relatedProducts
     .map(
       (product) => `
-        <a class="related-card" href="product.html?id=${product.id}">
+        <a class="related-card" href="/product.html?id=${product.id}">
           <img src="${product.image}" alt="${product.name}">
           <h3>${product.name}</h3>
           <p>$${product.price.toFixed(2)}</p>

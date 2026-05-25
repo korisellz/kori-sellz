@@ -10,6 +10,7 @@
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms of Service</a>
         <a href="/contact.html">Contact Us</a>
+        <a href="/faq.html">FAQ</a>
         <a href="/track.html">Track Order</a>
       </div>
 
@@ -19,3 +20,4 @@
 
   document.body.insertAdjacentHTML("beforeend", footer);
 });
+

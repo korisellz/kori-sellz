@@ -536,3 +536,24 @@ button:hover {
     width: 220px;
   }
 }
+
+.faq-page {
+  max-width: 900px;
+}
+
+.faq-item {
+  background: #0b0d1f;
+  border: 1px solid #ffffff22;
+  border-radius: 16px;
+  padding: 18px;
+  margin: 18px 0;
+}
+
+.faq-item h2 {
+  margin-top: 0;
+  font-size: 21px;
+}
+
+.faq-item p {
+  margin-bottom: 0;
+}

@@ -38,6 +38,7 @@ const products = [
   {
     id: 1,
     name: "Type-C to HDMI VGA 5-in-1 Dual Display Converter",
+    category: "Tech Accessories",
     sku: "CJXFJTDS00064-Black",
     cost: 12.78,
     price: 29.99,
@@ -46,6 +47,7 @@ const products = [
   {
     id: 2,
     name: "4-in-1 Magnetic Wireless Charging Station",
+    category: "Tech Accessories",
     sku: "CJYD179346901AZ",
     cost: 12.37,
     price: 29.99,
@@ -54,6 +56,7 @@ const products = [
   {
     id: 3,
     name: "V14 Professional 6K HD Dual Camera Drone - 2 Batteries",
+    category: "Drones & Cameras",
     sku: "CJWR241970801AZ",
     cost: 35.0,
     price: 69.99,
@@ -62,6 +65,7 @@ const products = [
   {
     id: 4,
     name: "V14 Professional 6K HD Dual Camera Drone - 3 Batteries",
+    category: "Drones & Cameras",
     sku: "CJWR241970802BY",
     cost: 39.0,
     price: 79.99,
@@ -70,6 +74,7 @@ const products = [
   {
     id: 5,
     name: "Wireless Lavalier Microphone for iPhone",
+    category: "Creator Tools",
     sku: "CJMK1698386-2in1 for IOS",
     cost: 10.98,
     price: 24.99,
@@ -78,6 +83,7 @@ const products = [
   {
     id: 6,
     name: "4K Waterproof Sport Camera",
+    category: "Drones & Cameras",
     sku: "CJXFXJSM00002-Black",
     cost: 8.69,
     price: 15.99,
@@ -86,6 +92,7 @@ const products = [
   {
     id: 7,
     name: "1080P LED Mini High Definition Projector",
+    category: "Home Gadgets",
     sku: "CJCJSJYDSJ00002_SKU_HERE",
     cost: 25.14,
     price: 35.99,
@@ -94,6 +101,7 @@ const products = [
   {
     id: 8,
     name: "Electronic Burglar Alarm Intelligent Home Security Door Stop Alarm",
+    category: "Home Security",
     sku: "CJZN105466804DW",
     cost: 6.0,
     price: 19.99,
@@ -102,6 +110,7 @@ const products = [
   {
     id: 9,
     name: "Electric Detangling Brush Scalp Massage Hair Brush",
+    category: "Beauty",
     sku: "CJXFZNZN00544-Purple",
     cost: 5.41,
     price: 17.99,
@@ -110,6 +119,7 @@ const products = [
   {
     id: 10,
     name: "60W Fast Charging Multi-function Charging Cable Storage Box",
+    category: "Tech Accessories",
     sku: "CJCD144565503CX",
     cost: 0.74,
     price: 9.99,

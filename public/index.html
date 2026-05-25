@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Kori Sellz</title> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kori Sellz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="hero">
-  <div class="logo">Kori Sellz</div>
-  <p>Trending tech. Luxury vibes. Everyday prices.</p>
-<a class="track-link" href="track.html">Track Order</a>
+    <div class="logo">Kori Sellz</div>
+    <p>Trending tech. Luxury vibes. Everyday prices.</p>
+
+    <a class="track-link" href="track.html">Track Order</a>
+
     <input id="searchInput" placeholder="Search products..." oninput="renderProducts()">
 
-    <select id="categoryFilter" onchange="renderProducts()">
-      <option value="all">All Categories</option>
-      <option value="tech">Tech</option>
-      <option value="audio">Audio</option>
-      <option value="drones">Drones</option>
-      <option value="chargers">Chargers</option>
-    </select>
+    <input type="hidden" id="categoryFilter" value="All">
+
+    <div class="category-filter">
+      <button class="category-btn active" onclick="setCategory('All', this)">All</button>
+      <button class="category-btn" onclick="setCategory('Tech Accessories', this)">Tech Accessories</button>
+      <button class="category-btn" onclick="setCategory('Drones & Cameras', this)">Drones & Cameras</button>
+      <button class="category-btn" onclick="setCategory('Beauty', this)">Beauty</button>
+      <button class="category-btn" onclick="setCategory('Home Security', this)">Home Security</button>
+      <button class="category-btn" onclick="setCategory('Creator Tools', this)">Creator Tools</button>
+    </div>
   </header>
 
   <main id="products"></main>

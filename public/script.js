@@ -39,8 +39,9 @@ function renderProducts() {
           <p>${product.rating} rating • ${product.reviews} reviews</p>
           <p class="stock">Only ${product.inventory} left in stock</p>
           <p class="price">$${product.price.toFixed(2)}</p>
-          <button onclick="addToCart(${product.id})">Add to Cart</button>
-          <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
+          <a class="details-btn" href="product.html?id=${product.id}">View Details</a>
+<button onclick="addToCart(${product.id})">Add to Cart</button>
+<button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
         </div>
       `
     )

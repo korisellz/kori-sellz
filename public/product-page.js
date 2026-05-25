@@ -61,6 +61,23 @@ function getProductIdFromUrl() {
   return Number(params.get("id"));
 }
 
+function getProductBadge(productId) {
+  const badges = {
+    1: "Best Seller",
+    2: "Popular",
+    3: "Best Seller",
+    4: "New Arrival",
+    5: "Creator Pick",
+    6: "Sale",
+    7: "Home Favorite",
+    8: "Security Pick",
+    9: "Beauty Find",
+    10: "Low Price"
+  };
+
+  return badges[productId] || "Trending";
+}
+
 function getDescription(product) {
   return (
     productDescriptions[product.id] ||
@@ -106,6 +123,15 @@ function getStockText(product) {
 }
 
 async function loadProductPage() {
+  const productDetail = document.getElementById("productDetail");
+
+  productDetail.innerHTML = `
+    <div class="card">
+      <h2>Loading product...</h2>
+      <p>Please wait while this item loads.</p>
+    </div>
+  `;
+
   const res = await fetch("/api/products");
 
   if (!res.ok) {
@@ -114,69 +140,26 @@ async function loadProductPage() {
 
   products = await res.json();
 
- products = products.map((product) => ({
-  ...product,
-  category: product.category || "Tech Accessories",
-  rating: 4.8,
-  inventory: Math.floor(Math.random() * 20) + 5,
-  badge: getProductBadge(product.id)
-}));
+  products = products.map((product) => ({
+    ...product,
+    category: product.category || "Tech Accessories",
+    rating: 4.8,
+    inventory: Math.floor(Math.random() * 20) + 5,
+    badge: getProductBadge(product.id)
+  }));
 
   const productId = getProductIdFromUrl();
   const product = products.find((item) => item.id === productId);
 
   if (!product) {
-    document.getElementById("productDetail").innerHTML = `
+    productDetail.innerHTML = `
       <h1>Product not found</h1>
       <p>This product may no longer be available.</p>
       <a class="details-btn" href="/">Return to Store</a>
     `;
     return;
   }
-function getProductBadge(productId) {
-  const badges = {
-    1: "Best Seller",
-    2: "Popular",
-    3: "Best Seller",
-    4: "New Arrival",
-    5: "Creator Pick",
-    6: "Sale",
-    7: "Home Favorite",
-    8: "Security Pick",
-    9: "Beauty Find",
-    10: "Low Price"
-  };
 
-function getProductBadge(productId) {
-  const badges = {
-    1: "Best Seller",
-    2: "Popular",
-    3: "Best Seller",
-    4: "New Arrival",
-    5: "Creator Pick",
-    6: "Sale",
-    7: "Home Favorite",
-    8: "Security Pick",
-    9: "Beauty Find",
-    10: "Low Price"
-  };
-
- function getProductBadge(productId) {
-  const badges = {
-    1: "Best Seller",
-    2: "Popular",
-    3: "Best Seller",
-    4: "New Arrival",
-    5: "Creator Pick",
-    6: "Sale",
-    7: "Home Favorite",
-    8: "Security Pick",
-    9: "Beauty Find",
-    10: "Low Price"
-  };
-
-  return badges[productId] || "Trending";
-}
   renderProduct(product);
   renderRelatedProducts(product);
 }
@@ -187,14 +170,18 @@ function renderProduct(product) {
   document.getElementById("productDetail").innerHTML = `
     <div class="product-detail-layout">
       <div class="product-image-box">
-        <img src="${product.image}" alt="${product.name}">
+        <img 
+          src="${product.image}" 
+          alt="${product.name}"
+          onerror="this.src='/kori-logo.jpeg'"
+        >
       </div>
 
       <div class="product-info-box">
         <div class="badge-row">
-  <span class="badge">${product.category}</span>
-  <span class="product-badge">${product.badge}</span>
-</div>
+          <span class="badge">${product.category}</span>
+          <span class="product-badge">${product.badge}</span>
+        </div>
 
         <h1>${product.name}</h1>
 
@@ -233,6 +220,10 @@ function renderProduct(product) {
 }
 
 function renderRelatedProducts(currentProduct) {
+  const relatedBox = document.getElementById("relatedProducts");
+
+  if (!relatedBox) return;
+
   const related = products
     .filter(
       (product) =>
@@ -247,11 +238,15 @@ function renderRelatedProducts(currentProduct) {
 
   const relatedProducts = related.length > 0 ? related : fallback;
 
-  document.getElementById("relatedProducts").innerHTML = relatedProducts
+  relatedBox.innerHTML = relatedProducts
     .map(
       (product) => `
         <a class="related-card" href="/product.html?id=${product.id}">
-          <img src="${product.image}" alt="${product.name}">
+          <img 
+            src="${product.image}" 
+            alt="${product.name}"
+            onerror="this.src='/kori-logo.jpeg'"
+          >
           <h3>${product.name}</h3>
           <p>$${product.price.toFixed(2)}</p>
         </a>
@@ -268,27 +263,32 @@ async function buyNow(productId) {
     return;
   }
 
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      items: [
-        {
-          ...product,
-          quantity: 1
-        }
-      ]
-    })
-  });
+  try {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            ...product,
+            quantity: 1
+          }
+        ]
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("Checkout failed");
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Checkout failed");
+    }
+  } catch (error) {
+    console.error("Checkout failed:", error);
+    alert("Checkout failed. Please try again.");
   }
 }
 

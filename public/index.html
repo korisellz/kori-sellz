@@ -3,14 +3,19 @@
 <head>
   <title>Kori Sellz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/jpeg" href="/kori-logo.jpeg">
 </head>
+
 <body>
   <header class="hero">
-    <div class="logo">Kori Sellz</div>
+    <a class="logo brand-logo" href="/">
+      <img src="/kori-logo.jpeg" alt="Kori Sellz logo">
+    </a>
+
     <p>Trending tech. Luxury vibes. Everyday prices.</p>
 
-    <a class="track-link" href="track.html">Track Order</a>
+    <a class="track-link" href="/track.html">Track Order</a>
 
     <input id="searchInput" placeholder="Search products..." oninput="renderProducts()">
 
@@ -29,7 +34,7 @@
   <main id="products"></main>
 
   <button class="cart-float" onclick="toggleCart()">
-    ðŸ›’ <span id="cartCount">0</span>
+    🛒 <span id="cartCount">0</span>
   </button>
 
   <aside id="cartPanel">
@@ -40,7 +45,7 @@
     <button class="close-btn" onclick="toggleCart()">Close</button>
   </aside>
 
-  <script src="script.js"></script>
+  <script src="/script.js"></script>
   <script src="/footer.js"></script>
 </body>
 </html>

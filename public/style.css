@@ -515,3 +515,24 @@ button:hover {
   color: #9cffb1;
   font-weight: bold;
 }
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  animation: none;
+}
+
+.brand-logo img {
+  width: 280px;
+  max-width: 90vw;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+  .brand-logo img {
+    width: 220px;
+  }
+}

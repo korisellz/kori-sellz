@@ -660,8 +660,8 @@ app.post("/api/checkout", async (req, res) => {
         quantity: item.quantity || 1
       })),
       mode: "payment",
-      success_url: SITE_URL + "/success",
-      cancel_url: SITE_URL + "/cancel"
+      success_url: `${process.env.SITE_URL || "https://korisellz.com"}/success`,
+cancel_url: `${process.env.SITE_URL || "https://korisellz.com"}/cancel`
     });
 
     res.json({ url: session.url });

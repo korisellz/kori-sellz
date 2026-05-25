@@ -1,23 +1,6 @@
 let products = [];
 let cart = [];
 
-async function loadProducts() {
-  const res = await fetch("/api/products");
-
-  if (!res.ok) {
-    throw new Error("Products API failed");
-  }
-
-  products = await res.json();
-
-products = products.map((product) => ({
-  ...product,
-  category: product.category || "Tech Accessories",
-  rating: 4.8,
-  reviews: Math.floor(Math.random() * 300) + 50,
-  inventory: Math.floor(Math.random() * 20) + 5,
-  badge: getProductBadge(product.id)
-}));
 function getProductBadge(productId) {
   const badges = {
     1: "Best Seller",
@@ -34,12 +17,44 @@ function getProductBadge(productId) {
 
   return badges[productId] || "Trending";
 }
+
+async function loadProducts() {
+  const productsContainer = document.getElementById("products");
+
+  productsContainer.innerHTML = `
+    <div class="card">
+      <h2>Loading products...</h2>
+      <p>Please wait while Kori Sellz loads.</p>
+    </div>
+  `;
+
+  const res = await fetch("/api/products");
+
+  if (!res.ok) {
+    throw new Error("Products API failed");
+  }
+
+  products = await res.json();
+
+  products = products.map((product) => ({
+    ...product,
+    category: product.category || "Tech Accessories",
+    rating: 4.8,
+    reviews: Math.floor(Math.random() * 300) + 50,
+    inventory: Math.floor(Math.random() * 20) + 5,
+    badge: getProductBadge(product.id)
+  }));
+
   renderProducts();
 }
 
 function renderProducts() {
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const category = document.getElementById("categoryFilter").value;
+  const searchInput = document.getElementById("searchInput");
+  const categoryFilter = document.getElementById("categoryFilter");
+  const productsContainer = document.getElementById("products");
+
+  const search = searchInput ? searchInput.value.toLowerCase() : "";
+  const category = categoryFilter ? categoryFilter.value : "All";
 
   const filtered = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search);
@@ -49,23 +64,42 @@ function renderProducts() {
     return matchesSearch && matchesCategory;
   });
 
-  document.getElementById("products").innerHTML = filtered
+  if (filtered.length === 0) {
+    productsContainer.innerHTML = `
+      <div class="card">
+        <h2>No products found</h2>
+        <p>Try another search or category.</p>
+      </div>
+    `;
+    return;
+  }
+
+  productsContainer.innerHTML = filtered
     .map(
       (product) => `
         <div class="card">
-         <div class="badge-row">
-  <span class="badge">${product.category}</span>
-  <span class="product-badge">${product.badge}</span>
-</div>
+          <div class="badge-row">
+            <span class="badge">${product.category}</span>
+            <span class="product-badge">${product.badge}</span>
+          </div>
+
           <img src="${product.image}" alt="${product.name}">
+
           <h2>${product.name}</h2>
+
           <div class="rating">★★★★★</div>
+
           <p>${product.rating} rating • ${product.reviews} reviews</p>
+
           <p class="stock">Only ${product.inventory} left in stock</p>
+
           <p class="price">$${product.price.toFixed(2)}</p>
-          <a class="details-btn" href="product.html?id=${product.id}">View Details</a>
-<button onclick="addToCart(${product.id})">Add to Cart</button>
-<button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
+
+          <a class="details-btn" href="/product.html?id=${product.id}">View Details</a>
+
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+
+          <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
         </div>
       `
     )
@@ -86,6 +120,12 @@ function setCategory(category, button) {
 
 function addToCart(productId) {
   const product = products.find((p) => p.id === productId);
+
+  if (!product) {
+    alert("Product not found.");
+    return;
+  }
+
   const existing = cart.find((item) => item.id === productId);
 
   if (existing) {
@@ -99,6 +139,12 @@ function addToCart(productId) {
 
 function buyNow(productId) {
   const product = products.find((p) => p.id === productId);
+
+  if (!product) {
+    alert("Product not found.");
+    return;
+  }
+
   cart = [{ ...product, quantity: 1 }];
   renderCart();
   checkout();
@@ -149,6 +195,7 @@ function changeQty(productId, amount) {
 
   if (item.quantity <= 0) {
     removeFromCart(productId);
+    return;
   }
 
   renderCart();
@@ -169,20 +216,25 @@ async function checkout() {
     return;
   }
 
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ items: cart })
-  });
+  try {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ items: cart })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("Checkout failed");
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Checkout failed");
+    }
+  } catch (error) {
+    console.error("Checkout failed:", error);
+    alert("Checkout failed. Please try again.");
   }
 }
 

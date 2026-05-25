@@ -231,4 +231,12 @@ async function buyNow(productId) {
   }
 }
 
-loadProductPage();
+loadProductPage().catch((error) => {
+  console.error("Product page failed:", error);
+
+  document.getElementById("productDetail").innerHTML = `
+    <h1>Product failed to load</h1>
+    <p>Something went wrong loading this product. Please go back to the store and try again.</p>
+    <a class="details-btn" href="/">Back to Store</a>
+  `;
+});

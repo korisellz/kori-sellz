@@ -405,3 +405,83 @@ button:hover {
     font-size: 28px;
   }
 }
+.site-footer {
+  margin-top: 50px;
+  padding: 35px 20px;
+  background: #050716;
+  border-top: 1px solid #2f335f;
+  text-align: center;
+  color: white;
+}
+
+.footer-logo {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  border: 1px solid #ffffff33;
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition: 0.25s ease;
+}
+
+.footer-links a:hover {
+  background: white;
+  color: #151B54;
+}
+
+.footer-small {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.policy-page {
+  max-width: 850px;
+  margin: 35px auto;
+  background: #15172e;
+  border: 1px solid #2f335f;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 25px #0006;
+  line-height: 1.7;
+}
+
+.policy-page h1 {
+  font-size: 34px;
+  margin-top: 0;
+}
+
+.policy-page h2 {
+  margin-top: 28px;
+  color: white;
+}
+
+.policy-page p {
+  color: #ddd;
+}
+
+.contact-card {
+  background: #0b0d1f;
+  border: 1px solid #ffffff22;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.policy-note {
+  font-size: 14px;
+  color: #aaa;
+  margin-top: 20px;
+}

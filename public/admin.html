@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Kori Sellz Admin</title>
@@ -64,7 +64,7 @@
             <h4>Items</h4>
             <ul>
               ${order.items.map(item => `
-                <li>${item.name} — Qty: ${item.quantity || 1} — $${item.price}</li>
+                <li>${item.name} â€” Qty: ${item.quantity || 1} â€” $${item.price}</li>
               `).join("")}
             </ul>
           </div>
@@ -74,5 +74,6 @@
       }
     }
   </script>
+  <script src="/footer.js"></script>
 </body>
 </html>

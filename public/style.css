@@ -485,3 +485,33 @@ button:hover {
   color: #aaa;
   margin-top: 20px;
 }
+.contact-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.contact-form label {
+  font-weight: bold;
+  color: white;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+}
+
+.contact-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+#contactStatus {
+  margin-top: 10px;
+  color: #9cffb1;
+  font-weight: bold;
+}

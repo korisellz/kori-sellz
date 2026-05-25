@@ -556,7 +556,70 @@ async function fulfillOrder(session) {
     console.error("Fulfillment Error:", errorMessage);
   }
 }
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, email, orderNumber, message } = req.body;
 
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        success: false,
+        error: "Name, email, and message are required."
+      });
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        error: "Email service is not configured."
+      });
+    }
+
+    const supportEmail = process.env.SUPPORT_EMAIL || "korisellz@gmail.com";
+
+    const emailResponse = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
+      to: supportEmail,
+      replyTo: email,
+      subject: orderNumber
+        ? `New Kori Sellz message for order ${orderNumber}`
+        : "New Kori Sellz contact form message",
+      html:
+        "<div style='font-family: Arial, sans-serif; padding: 20px;'>" +
+        "<h2>New Kori Sellz Contact Message</h2>" +
+        "<p><strong>Name:</strong> " + escapeHtml(name) + "</p>" +
+        "<p><strong>Email:</strong> " + escapeHtml(email) + "</p>" +
+        "<p><strong>Order Number:</strong> " + escapeHtml(orderNumber || "Not provided") + "</p>" +
+        "<p><strong>Message:</strong></p>" +
+        "<div style='background:#f4f4f4; padding:15px; border-radius:10px;'>" +
+        escapeHtml(message).replaceAll("\\n", "<br>") +
+        "</div>" +
+        "</div>"
+    });
+
+    if (emailResponse.error) {
+      console.error("Contact form email error:", emailResponse.error);
+
+      return res.status(500).json({
+        success: false,
+        error: "Email failed to send."
+      });
+    }
+
+    console.log("Contact form message sent:", emailResponse.data);
+
+    res.json({
+      success: true,
+      message: "Message sent successfully."
+    });
+  } catch (error) {
+    console.error("Contact form error:", error.message);
+
+    res.status(500).json({
+      success: false,
+      error: "Contact form failed."
+    });
+  }
+});
 app.post("/api/checkout", async (req, res) => {
   try {
     const items = req.body.items;

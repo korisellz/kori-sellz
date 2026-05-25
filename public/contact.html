@@ -10,27 +10,77 @@
     <div class="logo">Kori Sellz</div>
     <p>Contact Us</p>
     <a class="track-link" href="/">Back to Store</a>
+    <a class="track-link" href="/track.html">Track Order</a>
   </header>
 
   <main class="policy-page contact-page">
     <h1>Contact Us</h1>
 
-    <p>Need help with an order? We’re here to help.</p>
+    <p>Need help with an order? Fill out the form below and we’ll get back to you as soon as possible.</p>
+
+    <form id="contactForm" class="contact-form">
+      <label>Your Name</label>
+      <input id="contactName" type="text" placeholder="Your name" required>
+
+      <label>Your Email</label>
+      <input id="contactEmail" type="email" placeholder="you@example.com" required>
+
+      <label>Order Number</label>
+      <input id="contactOrder" type="text" placeholder="Optional">
+
+      <label>Message</label>
+      <textarea id="contactMessage" placeholder="How can we help?" required></textarea>
+
+      <button type="submit" class="buy-now">Send Message</button>
+
+      <p id="contactStatus"></p>
+    </form>
 
     <div class="contact-card">
-      <h2>Order Help</h2>
-      <p>Please include your order number, the email used at checkout, and a short explanation of what you need help with.</p>
-
-      <p><strong>Support Email:</strong> korisellz@gmail.com</p>
-
+      <h2>Email Support</h2>
+      <p>You can also email us directly at:</p>
+      <p><strong>korisellz@gmail.com</strong></p>
       <a class="details-btn" href="mailto:korisellz@gmail.com?subject=Kori%20Sellz%20Order%20Help">Email Support</a>
-      <a class="details-btn" href="/track.html">Track Order</a>
     </div>
-
-    <p class="policy-note">If you have not set up korisellz@gmail.com yet, replace it with your real support email before sending customers here.</p>
   </main>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const status = document.getElementById("contactStatus");
+      status.textContent = "Sending...";
+
+      const messageData = {
+        name: document.getElementById("contactName").value,
+        email: document.getElementById("contactEmail").value,
+        orderNumber: document.getElementById("contactOrder").value,
+        message: document.getElementById("contactMessage").value
+      };
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(messageData)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          status.textContent = "Message sent successfully! We’ll get back to you soon.";
+          document.getElementById("contactForm").reset();
+        } else {
+          status.textContent = "Message failed to send. Please email korisellz@gmail.com directly.";
+        }
+      } catch (error) {
+        status.textContent = "Message failed to send. Please email korisellz@gmail.com directly.";
+      }
+    });
+  </script>
 
   <script src="/footer.js"></script>
 </body>
 </html>
-

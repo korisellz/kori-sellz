@@ -83,7 +83,12 @@ function renderProducts() {
             <span class="product-badge">${product.badge}</span>
           </div>
 
-          <img src="${product.image}" alt="${product.name}">
+         <img 
+  src="${product.image}" 
+  alt="${product.name}" 
+  loading="lazy"
+  onerror="this.src='/kori-logo.jpeg'"
+>
 
           <h2>${product.name}</h2>
 

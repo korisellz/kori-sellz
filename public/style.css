@@ -606,3 +606,49 @@ button:hover {
 .trust-card p {
   color: #ddd;
 }
+.admin-box {
+  max-width: 1000px;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.admin-stat-card {
+  background: #0b0d1f;
+  border: 1px solid #ffffff22;
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+}
+
+.admin-stat-card h3 {
+  font-size: 26px;
+  margin: 0;
+  color: white;
+}
+
+.admin-stat-card p {
+  margin: 8px 0 0;
+  color: #ddd;
+}
+
+.admin-section-title {
+  margin-top: 25px;
+  text-align: left;
+}
+
+.admin-order-card {
+  margin-bottom: 18px;
+}
+
+.admin-order-card h4 {
+  margin-bottom: 8px;
+}
+
+.admin-order-card ul {
+  padding-left: 20px;
+}

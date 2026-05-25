@@ -75,6 +75,46 @@ const products = [
     price: 24.99,
     image: "https://cf.cjdropshipping.com/adbc5add-bd51-4328-84c4-106e8c198890.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   }
+  {
+  id: 6,
+  name: "4K Waterproof Sport Camera",
+  sku: "CJXFXJSM00002-Black",
+  cost: 8.69,
+  price: 15.99,
+  image: "https://cf.cjdropshipping.com/15287328/1102491960640.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+}
+{
+  id: 7,
+  name: "1080P LED Mini High Definition Projector",
+  sku: "CJCJSJYDSJ00002_SKU_HERE",
+  cost: 25.14,
+  price: 35.99,
+  image: "https://cf.cjdropshipping.com/20190617/604935516809.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+}
+{
+  id: 8,
+  name: "Electronic Burglar Alarm Intelligent Home Security Wedge Door Stop Alarm System Device Hotel Intruder Alert Detection",
+  sku: "CJZN105466804DW",
+  cost: 6.00,
+  price: 19.99,
+  image: "https://cf.cjdropshipping.com/1616652882290.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+}
+{
+  id: 9,
+  name: "Electric Detangling Brush Scalp Massage Hair Brush",
+  sku: "CJXFZNZN00544-Purple",
+  cost: 5.41,
+  price: 17.99,
+  image: "https://oss-cf.cjdropshipping.com/product/2025/01/11/01/ed1175b4-bd77-4761-a4f1-c24037b17f2b.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+}
+{
+  id: 10,
+  name: "60W Fast Charging Multi-function Charging Cable Storage Box",
+  sku: "CJCD144565503CX",
+  cost: 0.74,
+  price: 9.99,
+  image: "https://oss-cf.cjdropshipping.com/product/2025/04/17/10/538aa4eb-0082-41be-8cc2-90cf619f2b08.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+}
 ];
 
 function escapeHtml(value) {

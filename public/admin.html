@@ -84,12 +84,40 @@
       }
     }
 
+    function getBadgeHTML(order) {
+      const badges = [];
+
+      if (isTestOrder(order)) {
+        badges.push(`<span class="order-badge test">TEST ORDER</span>`);
+      } else {
+        badges.push(`<span class="order-badge live">LIVE ORDER</span>`);
+      }
+
+      const cj = getCjOrderId(order);
+
+      if (cj && cj !== "Not created") {
+        badges.push(`<span class="order-badge cj">CJ CREATED</span>`);
+      } else {
+        badges.push(`<span class="order-badge pending">CJ PENDING</span>`);
+      }
+
+      const status = getStatus(order).toLowerCase();
+
+      if (status.includes("error") || status.includes("failed")) {
+        badges.push(`<span class="order-badge error">ERROR</span>`);
+      } else {
+        badges.push(`<span class="order-badge paid">PAID</span>`);
+      }
+
+      return badges.join("");
+    }
+
     function renderStats(orders) {
       const totalOrders = orders.length;
       const testOrders = orders.filter(isTestOrder).length;
       const liveOrders = totalOrders - testOrders;
 
-      const cjOrders = orders.filter(order => {
+      const cjOrders = orders.filter((order) => {
         const cj = getCjOrderId(order);
         return cj && cj !== "Not created";
       }).length;
@@ -128,8 +156,9 @@
 
     function renderOrderCard(order) {
       const items = getItems(order);
+
       const itemList = items.length
-        ? items.map(item => `
+        ? items.map((item) => `
             <li>
               ${item.name || "Product"} 
               ${item.quantity ? `x ${item.quantity}` : ""}
@@ -140,6 +169,10 @@
 
       return `
         <div class="tracking-card admin-order-card">
+          <div class="order-badge-row">
+            ${getBadgeHTML(order)}
+          </div>
+
           <h3>${getCustomerName(order)}</h3>
 
           <p><strong>Email:</strong> ${getCustomerEmail(order)}</p>

@@ -5,9 +5,9 @@ async function loadProducts() {
   const res = await fetch("/api/products");
   products = await res.json();
 
-  products = products.map(product => ({
+  products = products.map((product) => ({
     ...product,
-    category: getCategory(product.name),
+    category: product.category || "Tech Accessories",
     rating: 4.8,
     reviews: Math.floor(Math.random() * 300) + 50,
     inventory: Math.floor(Math.random() * 20) + 5
@@ -16,44 +16,52 @@ async function loadProducts() {
   renderProducts();
 }
 
-function getCategory(name) {
-  const lower = name.toLowerCase();
-
-  if (lower.includes("drone")) return "drones";
-  if (lower.includes("charger") || lower.includes("charging")) return "chargers";
-  if (lower.includes("microphone")) return "audio";
-
-  return "tech";
-}
-
 function renderProducts() {
   const search = document.getElementById("searchInput").value.toLowerCase();
   const category = document.getElementById("categoryFilter").value;
 
-  const filtered = products.filter(product => {
+  const filtered = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search);
-    const matchesCategory = category === "all" || product.category === category;
+    const matchesCategory =
+      category === "All" || product.category === category;
+
     return matchesSearch && matchesCategory;
   });
 
-  document.getElementById("products").innerHTML = filtered.map(product => `
-    <div class="card">
-      <span class="badge">${product.category.toUpperCase()}</span>
-      <img src="${product.image}" alt="${product.name}">
-      <h2>${product.name}</h2>
-      <div class="rating">★★★★★</div>
-      <p>${product.rating} rating • ${product.reviews} reviews</p>
-      <p class="stock">Only ${product.inventory} left in stock</p>
-      <p class="price">$${product.price.toFixed(2)}</p>
-      <button onclick="addToCart(${product.id})">Add to Cart</button>
-      <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
-    </div>
-  `).join("");
+  document.getElementById("products").innerHTML = filtered
+    .map(
+      (product) => `
+        <div class="card">
+          <span class="badge">${product.category}</span>
+          <img src="${product.image}" alt="${product.name}">
+          <h2>${product.name}</h2>
+          <div class="rating">★★★★★</div>
+          <p>${product.rating} rating • ${product.reviews} reviews</p>
+          <p class="stock">Only ${product.inventory} left in stock</p>
+          <p class="price">$${product.price.toFixed(2)}</p>
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+          <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function setCategory(category, button) {
+  document.getElementById("categoryFilter").value = category;
+
+  document.querySelectorAll(".category-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  renderProducts();
 }
 
 function addToCart(productId) {
-  const product = products.find(p => p.id === productId);
-  const existing = cart.find(item => item.id === productId);
+  const product = products.find((p) => p.id === productId);
+  const existing = cart.find((item) => item.id === productId);
 
   if (existing) {
     existing.quantity += 1;
@@ -65,7 +73,7 @@ function addToCart(productId) {
 }
 
 function buyNow(productId) {
-  const product = products.find(p => p.id === productId);
+  const product = products.find((p) => p.id === productId);
   cart = [{ ...product, quantity: 1 }];
   renderCart();
   checkout();
@@ -84,27 +92,31 @@ function renderCart() {
     return;
   }
 
-  cartItems.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <strong>${item.name}</strong>
-      <p>$${item.price.toFixed(2)}</p>
+  cartItems.innerHTML = cart
+    .map(
+      (item) => `
+        <div class="cart-item">
+          <strong>${item.name}</strong>
+          <p>$${item.price.toFixed(2)}</p>
 
-      <div class="qty-controls">
-        <button onclick="changeQty(${item.id}, -1)">-</button>
-        <span>${item.quantity}</span>
-        <button onclick="changeQty(${item.id}, 1)">+</button>
-      </div>
+          <div class="qty-controls">
+            <button onclick="changeQty(${item.id}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button onclick="changeQty(${item.id}, 1)">+</button>
+          </div>
 
-      <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
-    </div>
-  `).join("");
+          <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+        </div>
+      `
+    )
+    .join("");
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   cartTotal.textContent = `Total: $${total.toFixed(2)}`;
 }
 
 function changeQty(productId, amount) {
-  const item = cart.find(i => i.id === productId);
+  const item = cart.find((i) => i.id === productId);
 
   if (!item) return;
 
@@ -118,7 +130,7 @@ function changeQty(productId, amount) {
 }
 
 function removeFromCart(productId) {
-  cart = cart.filter(item => item.id !== productId);
+  cart = cart.filter((item) => item.id !== productId);
   renderCart();
 }
 

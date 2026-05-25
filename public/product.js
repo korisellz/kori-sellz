@@ -12,7 +12,48 @@ const productDescriptions = {
   9: "Detangle and massage your scalp with this electric hair brush designed to smooth knots while giving a relaxing scalp massage.",
   10: "Stay organized with this multi-function charging cable storage box. It keeps cables neat while supporting fast charging on the go."
 };
-
+const productReviews = {
+  1: [
+    "Works great for my laptop setup. Super helpful for connecting to my monitor.",
+    "Small, easy to carry, and exactly what I needed."
+  ],
+  2: [
+    "Love having everything charge in one place. Looks clean on my nightstand.",
+    "Great price and works well for my phone and earbuds."
+  ],
+  3: [
+    "Fun drone for the price. The extra battery is definitely worth it.",
+    "Good starter drone and easy to use."
+  ],
+  4: [
+    "The 3 batteries make a big difference. Great for longer use.",
+    "Nice drone bundle for the price."
+  ],
+  5: [
+    "The audio sounds way better than my phone mic.",
+    "Perfect for recording videos and content."
+  ],
+  6: [
+    "Cute little camera for trips and outdoor videos.",
+    "Good value for the price."
+  ],
+  7: [
+    "Great for movie nights. Easy to set up.",
+    "Nice picture for a small projector."
+  ],
+  8: [
+    "Makes me feel safer when traveling.",
+    "Simple but loud enough to get attention."
+  ],
+  9: [
+    "Feels good on my scalp and helps with tangles.",
+    "Cute and actually useful."
+  ],
+  10: [
+    "Keeps my cords organized and easy to find.",
+    "Perfect for travel and my purse."
+  ]
+};
 function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return Number(params.get("id"));
@@ -26,7 +67,24 @@ function getShippingEstimate(product) {
   if (product.category === "Drones & Cameras") {
     return "Estimated delivery: 7-15 business days after processing.";
   }
+function renderReviews(product) {
+  const reviews = productReviews[product.id] || [
+    "Great product and easy checkout experience.",
+    "Good value and helpful order updates."
+  ];
 
+  return reviews
+    .map(
+      (review) => `
+        <div class="review-card">
+          <div class="rating">★★★★★</div>
+          <p>"${review}"</p>
+          <span>Verified-style customer review</span>
+        </div>
+      `
+    )
+    .join("");
+}
   if (product.category === "Beauty") {
     return "Estimated delivery: 7-14 business days after processing.";
   }
@@ -112,7 +170,11 @@ function renderProduct(product) {
     </div>
   `;
 }
-
+<div class="reviews-section">
+  <h3>Customer Reviews</h3>
+  <p class="review-summary">★★★★★ ${product.rating}/5 average rating</p>
+  ${renderReviews(product)}
+</div>
 function renderRelatedProducts(currentProduct) {
   const related = products
     .filter((product) => product.id !== currentProduct.id && product.category === currentProduct.category)

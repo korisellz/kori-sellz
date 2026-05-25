@@ -515,45 +515,33 @@ button:hover {
   color: #9cffb1;
   font-weight: bold;
 }
-.brand-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  animation: none;
-}
-
-.brand-logo img {
-  width: 280px;
-  max-width: 90vw;
-  height: auto;
-  display: block;
-  border-radius: 12px;
-}
-
-@media (max-width: 600px) {
-  .brand-logo img {
-    width: 220px;
-  }
-}
-
-.faq-page {
-  max-width: 900px;
-}
-
-.faq-item {
+.reviews-section {
+  margin-top: 30px;
   background: #0b0d1f;
   border: 1px solid #ffffff22;
   border-radius: 16px;
   padding: 18px;
-  margin: 18px 0;
 }
 
-.faq-item h2 {
-  margin-top: 0;
-  font-size: 21px;
+.review-summary {
+  color: gold;
+  font-weight: bold;
 }
 
-.faq-item p {
-  margin-bottom: 0;
+.review-card {
+  background: #15172e;
+  border: 1px solid #2f335f;
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.review-card p {
+  color: #eee;
+  margin: 8px 0;
+}
+
+.review-card span {
+  color: #aaa;
+  font-size: 13px;
 }

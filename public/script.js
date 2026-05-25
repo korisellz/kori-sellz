@@ -5,14 +5,30 @@ async function loadProducts() {
   const res = await fetch("/api/products");
   products = await res.json();
 
-  products = products.map((product) => ({
-    ...product,
-    category: product.category || "Tech Accessories",
-    rating: 4.8,
-    reviews: Math.floor(Math.random() * 300) + 50,
-    inventory: Math.floor(Math.random() * 20) + 5
-  }));
+products = products.map((product) => ({
+  ...product,
+  category: product.category || "Tech Accessories",
+  rating: 4.8,
+  reviews: Math.floor(Math.random() * 300) + 50,
+  inventory: Math.floor(Math.random() * 20) + 5,
+  badge: getProductBadge(product.id)
+}));
+function getProductBadge(productId) {
+  const badges = {
+    1: "Best Seller",
+    2: "Popular",
+    3: "Best Seller",
+    4: "New Arrival",
+    5: "Creator Pick",
+    6: "Sale",
+    7: "Home Favorite",
+    8: "Security Pick",
+    9: "Beauty Find",
+    10: "Low Price"
+  };
 
+  return badges[productId] || "Trending";
+}
   renderProducts();
 }
 
@@ -32,7 +48,10 @@ function renderProducts() {
     .map(
       (product) => `
         <div class="card">
-          <span class="badge">${product.category}</span>
+         <div class="badge-row">
+  <span class="badge">${product.category}</span>
+  <span class="product-badge">${product.badge}</span>
+</div>
           <img src="${product.image}" alt="${product.name}">
           <h2>${product.name}</h2>
           <div class="rating">★★★★★</div>

@@ -114,12 +114,13 @@ async function loadProductPage() {
 
   products = await res.json();
 
-  products = products.map((product) => ({
-    ...product,
-    category: product.category || "Tech Accessories",
-    rating: 4.8,
-    inventory: Math.floor(Math.random() * 20) + 5
-  }));
+ products = products.map((product) => ({
+  ...product,
+  category: product.category || "Tech Accessories",
+  rating: 4.8,
+  inventory: Math.floor(Math.random() * 20) + 5,
+  badge: getProductBadge(product.id)
+}));
 
   const productId = getProductIdFromUrl();
   const product = products.find((item) => item.id === productId);
@@ -132,7 +133,50 @@ async function loadProductPage() {
     `;
     return;
   }
+function getProductBadge(productId) {
+  const badges = {
+    1: "Best Seller",
+    2: "Popular",
+    3: "Best Seller",
+    4: "New Arrival",
+    5: "Creator Pick",
+    6: "Sale",
+    7: "Home Favorite",
+    8: "Security Pick",
+    9: "Beauty Find",
+    10: "Low Price"
+  };
 
+function getProductBadge(productId) {
+  const badges = {
+    1: "Best Seller",
+    2: "Popular",
+    3: "Best Seller",
+    4: "New Arrival",
+    5: "Creator Pick",
+    6: "Sale",
+    7: "Home Favorite",
+    8: "Security Pick",
+    9: "Beauty Find",
+    10: "Low Price"
+  };
+
+ function getProductBadge(productId) {
+  const badges = {
+    1: "Best Seller",
+    2: "Popular",
+    3: "Best Seller",
+    4: "New Arrival",
+    5: "Creator Pick",
+    6: "Sale",
+    7: "Home Favorite",
+    8: "Security Pick",
+    9: "Beauty Find",
+    10: "Low Price"
+  };
+
+  return badges[productId] || "Trending";
+}
   renderProduct(product);
   renderRelatedProducts(product);
 }
@@ -147,7 +191,10 @@ function renderProduct(product) {
       </div>
 
       <div class="product-info-box">
-        <span class="badge">${product.category}</span>
+        <div class="badge-row">
+  <span class="badge">${product.category}</span>
+  <span class="product-badge">${product.badge}</span>
+</div>
 
         <h1>${product.name}</h1>
 

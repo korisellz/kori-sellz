@@ -545,3 +545,22 @@ button:hover {
   color: #aaa;
   font-size: 13px;
 }
+.badge-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.product-badge {
+  display: inline-block;
+  background: white;
+  color: #151B54;
+  border: 1px solid #ffffff55;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+}

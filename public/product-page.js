@@ -1,18 +1,26 @@
 let products = [];
 
 const productDescriptions = {
-  1: "Connect your Type-C device to HDMI, VGA, USB, and more with this compact 5-in-1 adapter. Perfect for laptops, monitors, projectors, and everyday tech setups.",
-  2: "Keep your phone, earbuds, and smartwatch powered with this sleek 4-in-1 magnetic wireless charging station. Great for desks, nightstands, and travel setups.",
-  3: "Capture smooth aerial shots with this V14 Professional 6K HD dual camera drone. Comes with 2 batteries so you can fly longer and create more content.",
-  4: "The V14 Professional 6K HD drone with 3 batteries gives you extra flight time, dual-camera recording, and a compact design for creators and hobby flyers.",
-  5: "Record clearer audio for videos, lives, interviews, and content creation with this wireless lavalier microphone for iPhone.",
-  6: "Take your adventures anywhere with this 4K waterproof sport camera. Perfect for outdoor videos, action shots, travel, and everyday content.",
-  7: "Turn any room into a mini theater with this compact 1080P LED projector. Great for movies, gaming, parties, and cozy nights in.",
-  8: "Add an extra layer of protection with this intelligent door stop alarm. Great for apartments, hotels, dorms, and home security.",
-  9: "Detangle and massage your scalp with this electric hair brush designed to smooth knots while giving a relaxing scalp massage.",
-  10: "Stay organized with this multi-function charging cable storage box. It keeps cables neat while supporting fast charging on the go."
-};
+  1: "This Type-C to HDMI VGA 5-in-1 dual display converter is perfect for connecting your laptop, tablet, or Type-C device to monitors, TVs, and projectors. It is great for work setups, school, presentations, streaming, and turning a small screen into a bigger viewing experience.",
 
+  2: "This 4-in-1 magnetic wireless charging station keeps your phone, earbuds, smartwatch, and other everyday devices organized in one sleek charging spot. It is perfect for your nightstand, desk, office, or travel setup.",
+
+  3: "The V14 Professional 6K HD dual camera drone is made for creators, beginners, and hobby flyers who want aerial photos and videos at an affordable price. This version includes 2 batteries for more flying time and more content creation.",
+
+  4: "The V14 Professional 6K HD dual camera drone with 3 batteries gives you extra flight time, making it a better option for longer outdoor sessions, travel videos, and creative shots. It is a strong pick for customers who want more flying time before recharging.",
+
+  5: "This wireless lavalier microphone for iPhone is great for TikTok videos, Instagram reels, YouTube content, interviews, voiceovers, and live selling. It helps capture clearer audio without needing a bulky microphone setup.",
+
+  6: "This 4K waterproof sport camera is made for outdoor videos, travel clips, action shots, and everyday content. It is compact, easy to carry, and a fun budget-friendly camera for adventures, trips, and creative recording.",
+
+  7: "This 1080P LED mini projector turns any room into a cozy movie or gaming setup. It is great for bedrooms, dorm rooms, movie nights, parties, and casual entertainment without needing a large TV.",
+
+  8: "This intelligent door stop alarm adds an extra layer of security for apartments, hotels, dorms, bedrooms, and travel. It is easy to place behind a door and helps alert you if someone tries to enter.",
+
+  9: "This electric detangling brush helps smooth knots while giving your scalp a relaxing massage. It is a cute and useful beauty tool for everyday hair care, detangling, and self-care routines.",
+
+  10: "This 60W fast charging multi-function cable storage box keeps your charging cables organized and ready to use. It is perfect for travel, purses, desks, cars, and anyone who hates tangled cords."
+};
 const productReviews = {
   1: [
     "Works great for my laptop setup. Super helpful for connecting to my monitor.",

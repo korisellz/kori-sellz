@@ -851,3 +851,78 @@ button:hover {
     box-shadow: 0 16px 35px rgba(0, 0, 0, 0.45);
   }
 }
+.featured-section {
+  max-width: 1300px;
+  margin: 30px auto 10px;
+  padding: 0 30px;
+}
+
+.featured-section h2 {
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.featured-section > p {
+  text-align: center;
+  color: #ddd;
+  margin-bottom: 24px;
+}
+
+#featuredProducts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.featured-card {
+  background: linear-gradient(135deg, #151B54, #111326);
+  border: 1px solid #ffffff22;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  box-shadow: 0 12px 28px #0008;
+}
+
+.featured-card img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  background: white;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+
+.featured-card h3 {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.featured-card button {
+  margin-top: 6px;
+  margin-right: 6px;
+  padding: 9px 12px;
+}
+
+@media (max-width: 600px) {
+  .featured-section {
+    padding: 0 16px;
+  }
+
+  .featured-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .featured-card img {
+    width: 180px;
+    height: 180px;
+  }
+
+  .featured-card button {
+    width: 100%;
+    margin-right: 0;
+  }
+}

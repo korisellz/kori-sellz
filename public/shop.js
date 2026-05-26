@@ -47,7 +47,7 @@ async function loadProducts() {
 
   renderProducts();
 }
-
+renderFeaturedProducts();
 function renderProducts() {
   const searchInput = document.getElementById("searchInput");
   const categoryFilter = document.getElementById("categoryFilter");
@@ -242,7 +242,28 @@ async function checkout() {
     alert("Checkout failed. Please try again.");
   }
 }
+function renderFeaturedProducts() {
+  const featuredIds = [3, 4, 5, 2, 20];
 
+  const featured = products.filter(product => featuredIds.includes(product.id));
+
+  const featuredBox = document.getElementById("featuredProducts");
+
+  if (!featuredBox) return;
+
+  featuredBox.innerHTML = featured.map(product => `
+    <div class="featured-card">
+      <img src="${product.image}" alt="${product.name}">
+      <div>
+        <span class="badge">FEATURED</span>
+        <h3>${product.name}</h3>
+        <p class="price">$${product.price.toFixed(2)}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+        <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
+      </div>
+    </div>
+  `).join("");
+}
 loadProducts().catch((error) => {
   console.error("Products failed to load:", error);
 

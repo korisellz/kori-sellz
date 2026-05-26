@@ -51,7 +51,7 @@ const products = [
     sku: "CJYD179346901AZ",
     cost: 23.41,
     price: 29.99,
-    image: "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_300,h_300/sharpen,100/format,jpg"
+    image: "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_800,h_800/sharpen,100/format,jpg"
   },
   {
     id: 3,
@@ -132,7 +132,7 @@ const products = [
     sku: "CJXC103967002BY",
     cost: 25.82,
     price: 29.99,
-    image: "https://cf.cjdropshipping.com/1615531072424.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/1615531072424.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 12,
@@ -141,7 +141,7 @@ const products = [
     sku: "CJTY115427723WD",
     cost: 35.75,
     price: 39.99,
-    image: "https://cf.cjdropshipping.com/4b5880f2-2caa-448a-9f07-1803e4ed8a7b.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/4b5880f2-2caa-448a-9f07-1803e4ed8a7b.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 13,
@@ -150,7 +150,7 @@ const products = [
     sku: "CJJT175857504DW",
     cost: 22.16,
     price: 24.99,
-    image: "https://cf.cjdropshipping.com/53a65dde-8d21-4a96-8d4c-e243dbd1ae3a.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/53a65dde-8d21-4a96-8d4c-e243dbd1ae3a.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 14,
@@ -159,7 +159,7 @@ const products = [
     sku: "CJJJJTCF00622-blue",
     cost: 30.97,
     price: 34.99,
-    image: "https://cf.cjdropshipping.com/15584544/1173139706670.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/15584544/1173139706670.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 15,
@@ -168,7 +168,7 @@ const products = [
     sku: "CJMJ223191302BY",
     cost: 22.07,
     price: 29.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2024/12/04/01/ffa28e14-d497-492a-8606-deefc2397021_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://oss-cf.cjdropshipping.com/product/2024/12/04/01/ffa28e14-d497-492a-8606-deefc2397021_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 16,
@@ -177,7 +177,7 @@ const products = [
     sku: "CJSJ121627701AZ",
     cost: 15.42,
     price: 19.99,
-    image: "https://cf.cjdropshipping.com/12a84093-bc7a-42fc-b308-d35c3e4c7e4e.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/12a84093-bc7a-42fc-b308-d35c3e4c7e4e.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 17,
@@ -186,7 +186,7 @@ const products = [
     sku: "CJJT187400502BY",
     cost: 7.83,
     price: 9.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2023/10/18/09/273fe5d1-fe54-468d-89be-500f7e4c04b5.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://oss-cf.cjdropshipping.com/product/2023/10/18/09/273fe5d1-fe54-468d-89be-500f7e4c04b5.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 18,
@@ -195,7 +195,7 @@ const products = [
     sku: "CJYD227569301AZ",
     cost: 25.86,
     price: 29.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2025/01/21/02/004c7170-5f19-4226-97f2-2b5eecc305b8_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://oss-cf.cjdropshipping.com/product/2025/01/21/02/004c7170-5f19-4226-97f2-2b5eecc305b8_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 19,
@@ -204,7 +204,7 @@ const products = [
     sku: "CJFU241984201AZ",
     cost: 16.08,
     price: 19.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2025/07/04/01/81762b21-9c33-4dbd-bac7-540ba4061aa2.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://oss-cf.cjdropshipping.com/product/2025/07/04/01/81762b21-9c33-4dbd-bac7-540ba4061aa2.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 20,
@@ -213,7 +213,7 @@ const products = [
     sku: "CJJT27577190001",
     cost: 15.96,
     price: 19.99,
-    image: "https://cf.cjdropshipping.com/28c4098e-9248-4316-bfbe-0c1474525187.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/28c4098e-9248-4316-bfbe-0c1474525187.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 21,
@@ -222,7 +222,7 @@ const products = [
     sku: "CJJJ265100603CX",
     cost: 12.81,
     price: 14.99,
-    image: "https://cf.cjdropshipping.com/4a15a241-cd39-4777-aeab-92e05739aed6.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/4a15a241-cd39-4777-aeab-92e05739aed6.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 22,
@@ -231,7 +231,7 @@ const products = [
     sku: "CJJJJTJT02992-black",
     cost: 13.31,
     price: 24.99,
-    image: "https://cf.cjdropshipping.com/15641568/23132624195.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/15641568/23132624195.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 23,
@@ -240,7 +240,7 @@ const products = [
     sku: "CJBJPFMB00672-Blue-Q1pc",
     cost: 10.72,
     price: 19.99,
-    image: "https://cf.cjdropshipping.com/20200321/1960128325958.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/20200321/1960128325958.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 24,
@@ -249,7 +249,7 @@ const products = [
     sku: "CJJT253279301AZ",
     cost: 8.36,
     price: 12.99,
-    image: "https://cf.cjdropshipping.com/cfd297ab-a7ad-4817-9b1f-8ebaf38f7a4c.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://cf.cjdropshipping.com/cfd297ab-a7ad-4817-9b1f-8ebaf38f7a4c.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 25,
@@ -258,7 +258,7 @@ const products = [
     sku: "CJKY212180601AZ",
     cost: 11.83,
     price: 19.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2024/08/28/01/1fcf48bf-a11d-456c-9407-345f89f507ee.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
+    image: "https://oss-cf.cjdropshipping.com/product/2024/08/28/01/1fcf48bf-a11d-456c-9407-345f89f507ee.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   }
 ];
 

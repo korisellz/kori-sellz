@@ -150,7 +150,31 @@ async function loadProductPage() {
 
 function renderProduct(product) {
   document.title = `${product.name} | Kori Sellz`;
+const metaDescription = document.querySelector('meta[name="description"]');
+if (metaDescription) {
+  metaDescription.setAttribute(
+    "content",
+    `${product.name} from Kori Sellz. ${getDescription(product).slice(0, 140)}`
+  );
+}
 
+const ogTitle = document.querySelector('meta[property="og:title"]');
+if (ogTitle) {
+  ogTitle.setAttribute("content", `${product.name} | Kori Sellz`);
+}
+
+const ogDescription = document.querySelector('meta[property="og:description"]');
+if (ogDescription) {
+  ogDescription.setAttribute(
+    "content",
+    getDescription(product).slice(0, 180)
+  );
+}
+
+const ogImage = document.querySelector('meta[property="og:image"]');
+if (ogImage) {
+  ogImage.setAttribute("content", product.image);
+}
   document.getElementById("productDetail").innerHTML = `
     <div class="product-detail-layout">
       <div class="product-image-box">

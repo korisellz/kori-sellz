@@ -652,3 +652,202 @@ button:hover {
 .admin-order-card ul {
   padding-left: 20px;
 }
+/* =========================
+   MOBILE + TABLET RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+  .hero {
+    padding: 28px 14px;
+  }
+
+  .brand-logo img {
+    max-width: 190px;
+    height: auto;
+  }
+
+  .hero p {
+    font-size: 15px;
+    padding: 0 10px;
+  }
+
+  #searchInput {
+    width: 92%;
+    max-width: 420px;
+    display: block;
+    margin: 14px auto;
+  }
+
+  .category-filter {
+    display: flex;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    scrollbar-width: none;
+  }
+
+  .category-filter::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  #products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .card img {
+    height: 180px;
+  }
+
+  .card h2 {
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .price {
+    font-size: 19px;
+  }
+
+  .card button {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .cart-float {
+    right: 14px;
+    bottom: 14px;
+    padding: 12px 15px;
+    font-size: 20px;
+  }
+
+  #cartPanel {
+    width: 92%;
+    right: -100%;
+  }
+
+  #cartPanel.open {
+    right: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .hero {
+    padding: 22px 12px;
+  }
+
+  .brand-logo img {
+    max-width: 160px;
+  }
+
+  .track-link {
+    display: inline-block;
+    margin: 8px 4px;
+    padding: 9px 13px;
+    font-size: 14px;
+  }
+
+  #products {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .card img {
+    height: 230px;
+  }
+
+  .card h2 {
+    font-size: 17px;
+  }
+
+  .badge {
+    font-size: 12px;
+  }
+
+  .rating {
+    font-size: 16px;
+  }
+
+  .stock {
+    font-size: 14px;
+  }
+
+  button {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .cart-item {
+    font-size: 14px;
+  }
+
+  .qty-controls {
+    justify-content: center;
+  }
+
+  .tracking-page,
+  .policy-page {
+    padding: 20px 14px;
+  }
+
+  .tracking-box {
+    width: 100%;
+    padding: 18px;
+  }
+
+  .tracking-box h1,
+  .tracking-box h2,
+  .policy-page h1 {
+    font-size: 24px;
+  }
+
+  .tracking-box p,
+  .policy-page p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-order-card {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Better desktop spacing */
+@media (min-width: 901px) {
+  #products {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.45);
+  }
+}

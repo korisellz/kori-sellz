@@ -1,58 +1,53 @@
 let products = [];
 
 const productDescriptions = {
-  1: "This Type-C to HDMI VGA 5-in-1 dual display converter is perfect for connecting your laptop, tablet, or Type-C device to monitors, TVs, and projectors. It is great for work setups, school, presentations, streaming, and turning a small screen into a bigger viewing experience.",
-
-  2: "This 4-in-1 magnetic wireless charging station keeps your phone, earbuds, smartwatch, and other everyday devices organized in one sleek charging spot. It is perfect for your nightstand, desk, office, or travel setup.",
-
-  3: "The V14 Professional 6K HD dual camera drone is made for creators, beginners, and hobby flyers who want aerial photos and videos at an affordable price. This version includes 2 batteries for more flying time and more content creation.",
-
-  4: "The V14 Professional 6K HD dual camera drone with 3 batteries gives you extra flight time, making it a better option for longer outdoor sessions, travel videos, and creative shots.",
-
-  5: "This wireless lavalier microphone for iPhone is great for TikTok videos, Instagram reels, YouTube content, interviews, voiceovers, and live selling. It helps capture clearer audio without needing a bulky microphone setup.",
-
-  6: "This 4K waterproof sport camera is made for outdoor videos, travel clips, action shots, and everyday content. It is compact, easy to carry, and a fun budget-friendly camera for adventures, trips, and creative recording.",
-
-  7: "This 1080P LED mini projector turns any room into a cozy movie or gaming setup. It is great for bedrooms, dorm rooms, movie nights, parties, and casual entertainment without needing a large TV.",
-
-  8: "This intelligent door stop alarm adds an extra layer of security for apartments, hotels, dorms, bedrooms, and travel. It is easy to place behind a door and helps alert you if someone tries to enter.",
-
-  9: "This electric detangling brush helps smooth knots while giving your scalp a relaxing massage. It is a cute and useful beauty tool for everyday hair care, detangling, and self-care routines.",
-
-  10: "This 60W fast charging multi-function cable storage box keeps your charging cables organized and ready to use. It is perfect for travel, purses, desks, cars, and anyone who hates tangled cords.",
-
+  1: "Connect your Type-C device to HDMI, VGA, USB, and more with this compact 5-in-1 adapter. Perfect for laptops, monitors, projectors, and everyday tech setups.",
+  2: "Keep your phone, earbuds, and smartwatch powered with this sleek 4-in-1 magnetic wireless charging station. Great for desks, nightstands, and travel setups.",
+  3: "Capture smooth aerial shots with this V14 Professional 6K HD dual camera drone. Comes with 2 batteries so you can fly longer and create more content.",
+  4: "The V14 Professional 6K HD drone with 3 batteries gives you extra flight time, dual-camera recording, and a compact design for creators and hobby flyers.",
+  5: "Record clearer audio for videos, lives, interviews, and content creation with this wireless lavalier microphone for iPhone.",
+  6: "Take your adventures anywhere with this 4K waterproof sport camera. Perfect for outdoor videos, action shots, travel, and everyday content.",
+  7: "Turn any room into a mini theater with this compact 1080P LED projector. Great for movies, gaming, parties, and cozy nights in.",
+  8: "Add an extra layer of protection with this intelligent door stop alarm. Great for apartments, hotels, dorms, and home security.",
+  9: "Detangle and massage your scalp with this electric hair brush designed to smooth knots while giving a relaxing scalp massage.",
+  10: "Stay organized with this multi-function charging cable storage box. It keeps cables neat while supporting fast charging on the go.",
   11: "This portable mini desk vacuum cleaner is perfect for keeping desks, vanities, keyboards, and small spaces clean. It is compact, easy to use, and great for crumbs, dust, and everyday messes.",
-
   12: "This LED sunset projection lamp adds a warm, trendy glow to bedrooms, content setups, photos, and cozy spaces. It is perfect for creating aesthetic lighting for pictures, videos, or relaxing at home.",
-
   13: "These Bluetooth sleep headphones with an eye mask are made for relaxing, sleeping, traveling, or listening to music without bulky headphones. They are great for naps, flights, and bedtime comfort.",
-
   14: "This mini portable blender cup makes it easy to mix smoothies, protein drinks, juices, and shakes on the go. It is a convenient pick for work, school, the gym, or quick healthy drinks at home.",
-
   15: "This rechargeable electric makeup brush cleaner helps clean makeup brushes faster and easier. It is a helpful beauty tool for keeping brushes fresh, reducing buildup, and making your makeup routine feel more organized.",
-
   16: "This magnetic car phone holder keeps your phone secure and easy to see while driving. It is useful for navigation, hands-free viewing, and keeping your phone within reach without clutter.",
-
   17: "This smart motion sensor LED night light is great for hallways, bedrooms, closets, bathrooms, and entryways. It automatically lights up when motion is detected, making nighttime movement easier and safer.",
-
-  18: "This phone tripod with Bluetooth remote is perfect for content creators, selfies, TikToks, photos, videos, live streams, and hands-free recording. It helps make filming easier without needing someone else to hold your phone.",
-
+  18: "This phone tripod with Bluetooth remote is perfect for content creators, selfies, TikToks, photos, videos, live streams, and hands-free recording.",
   19: "This USB rechargeable neck fan helps keep you cool while walking, working, traveling, doing makeup, or spending time outdoors. It is lightweight, hands-free, and easy to recharge.",
-
   20: "This mini WiFi indoor security camera helps monitor your home, apartment, room, office, or pets. It is a useful security gadget for keeping an eye on important spaces from your phone.",
-
   21: "This rechargeable heated eyelash curler helps lift and shape lashes for a more polished look. It is a cute beauty tool for everyday makeup routines, travel, and quick touch-ups.",
-
   22: "This LED lighted makeup mirror gives you better lighting while doing makeup, skincare, brows, or lashes. It is great for vanities, bedrooms, dorms, and getting ready with a clearer view.",
-
   23: "This electric facial cleansing brush helps deep clean your skin and refresh your skincare routine. It is designed for gentle cleansing, exfoliating, and making your face feel smoother and cleaner.",
-
-  24: "This wireless door and window alarm sensor adds extra protection to your home, apartment, dorm, or office. It helps alert you when a door or window is opened, giving you more peace of mind.",
-
+  24: "This wireless door and window alarm sensor adds extra protection to your home, apartment, dorm, or office. It helps alert you when a door or window is opened.",
   25: "This portable personal safety alarm keychain is a small safety accessory you can carry on keys, bags, or backpacks. It is useful for travel, walks, parking lots, school, and everyday peace of mind."
-};function getProductIdFromUrl() {
+};
+
+const productReviews = {
+  1: ["Works great for my laptop setup.", "Small, easy to carry, and exactly what I needed."],
+  2: ["Love having everything charge in one place.", "Great price and works well."],
+  3: ["Fun drone for the price.", "Good starter drone and easy to use."],
+  4: ["The 3 batteries make a big difference.", "Nice drone bundle for the price."],
+  5: ["The audio sounds way better than my phone mic.", "Perfect for recording videos."],
+  6: ["Cute little camera for trips.", "Good value for the price."],
+  7: ["Great for movie nights.", "Nice picture for a small projector."],
+  8: ["Makes me feel safer when traveling.", "Simple but loud enough."],
+  9: ["Feels good on my scalp.", "Cute and useful."],
+  10: ["Keeps my cords organized.", "Perfect for travel."]
+};
+
+function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return Number(params.get("id"));
+}
+
+function getDescription(product) {
+  return productDescriptions[product.id] || "This product is part of the Kori Sellz collection and was selected for everyday usefulness, style, and affordability.";
 }
 
 function getProductBadge(productId) {
@@ -66,15 +61,26 @@ function getProductBadge(productId) {
     7: "Home Favorite",
     8: "Security Pick",
     9: "Beauty Find",
-    10: "Low Price"
+    10: "Low Price",
+    11: "Desk Essential",
+    12: "Aesthetic Pick",
+    13: "Travel Pick",
+    14: "Wellness Pick",
+    15: "Beauty Tool",
+    16: "Car Essential",
+    17: "Home Favorite",
+    18: "Creator Pick",
+    19: "Summer Pick",
+    20: "Security Pick",
+    21: "Beauty Find",
+    22: "Vanity Favorite",
+    23: "Skincare Pick",
+    24: "Security Pick",
+    25: "Safety Pick"
   };
 
   return badges[productId] || "Trending";
 }
-
-function getDescription(product) {
-  return (
-   ${productDescriptions[product.id] || "This product is part of the Kori Sellz collection and was selected for everyday usefulness, style, and affordability."}
 
 function getShippingEstimate(product) {
   if (product.category === "Beauty") {
@@ -90,17 +96,13 @@ function renderReviews(product) {
     "Good value and helpful order updates."
   ];
 
-  return reviews
-    .map(
-      (review) => `
-        <div class="review-card">
-          <div class="rating">★★★★★</div>
-          <p>"${review}"</p>
-          <span>Verified-style customer review</span>
-        </div>
-      `
-    )
-    .join("");
+  return reviews.map((review) => `
+    <div class="review-card">
+      <div class="rating">★★★★★</div>
+      <p>"${review}"</p>
+      <span>Verified-style customer review</span>
+    </div>
+  `).join("");
 }
 
 function getStockText(product) {
@@ -114,15 +116,6 @@ function getStockText(product) {
 }
 
 async function loadProductPage() {
-  const productDetail = document.getElementById("productDetail");
-
-  productDetail.innerHTML = `
-    <div class="card">
-      <h2>Loading product...</h2>
-      <p>Please wait while this item loads.</p>
-    </div>
-  `;
-
   const res = await fetch("/api/products");
 
   if (!res.ok) {
@@ -143,7 +136,7 @@ async function loadProductPage() {
   const product = products.find((item) => item.id === productId);
 
   if (!product) {
-    productDetail.innerHTML = `
+    document.getElementById("productDetail").innerHTML = `
       <h1>Product not found</h1>
       <p>This product may no longer be available.</p>
       <a class="details-btn" href="/">Return to Store</a>
@@ -161,11 +154,7 @@ function renderProduct(product) {
   document.getElementById("productDetail").innerHTML = `
     <div class="product-detail-layout">
       <div class="product-image-box">
-        <img 
-          src="${product.image}" 
-          alt="${product.name}"
-          onerror="this.src='/kori-logo.jpeg'"
-        >
+        <img src="${product.image}" alt="${product.name}">
       </div>
 
       <div class="product-info-box">
@@ -211,16 +200,8 @@ function renderProduct(product) {
 }
 
 function renderRelatedProducts(currentProduct) {
-  const relatedBox = document.getElementById("relatedProducts");
-
-  if (!relatedBox) return;
-
   const related = products
-    .filter(
-      (product) =>
-        product.id !== currentProduct.id &&
-        product.category === currentProduct.category
-    )
+    .filter((product) => product.id !== currentProduct.id && product.category === currentProduct.category)
     .slice(0, 3);
 
   const fallback = products
@@ -229,21 +210,13 @@ function renderRelatedProducts(currentProduct) {
 
   const relatedProducts = related.length > 0 ? related : fallback;
 
-  relatedBox.innerHTML = relatedProducts
-    .map(
-      (product) => `
-        <a class="related-card" href="/product.html?id=${product.id}">
-          <img 
-            src="${product.image}" 
-            alt="${product.name}"
-            onerror="this.src='/kori-logo.jpeg'"
-          >
-          <h3>${product.name}</h3>
-          <p>$${product.price.toFixed(2)}</p>
-        </a>
-      `
-    )
-    .join("");
+  document.getElementById("relatedProducts").innerHTML = relatedProducts.map((product) => `
+    <a class="related-card" href="/product.html?id=${product.id}">
+      <img src="${product.image}" alt="${product.name}">
+      <h3>${product.name}</h3>
+      <p>$${product.price.toFixed(2)}</p>
+    </a>
+  `).join("");
 }
 
 async function buyNow(productId) {
@@ -254,32 +227,27 @@ async function buyNow(productId) {
     return;
   }
 
-  try {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        items: [
-          {
-            ...product,
-            quantity: 1
-          }
-        ]
-      })
-    });
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      items: [
+        {
+          ...product,
+          quantity: 1
+        }
+      ]
+    })
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("Checkout failed");
-    }
-  } catch (error) {
-    console.error("Checkout failed:", error);
-    alert("Checkout failed. Please try again.");
+  if (data.url) {
+    window.location.href = data.url;
+  } else {
+    alert("Checkout failed");
   }
 }
 

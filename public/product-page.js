@@ -7,7 +7,7 @@ const productDescriptions = {
 
   3: "The V14 Professional 6K HD dual camera drone is made for creators, beginners, and hobby flyers who want aerial photos and videos at an affordable price. This version includes 2 batteries for more flying time and more content creation.",
 
-  4: "The V14 Professional 6K HD dual camera drone with 3 batteries gives you extra flight time, making it a better option for longer outdoor sessions, travel videos, and creative shots. It is a strong pick for customers who want more flying time before recharging.",
+  4: "The V14 Professional 6K HD dual camera drone with 3 batteries gives you extra flight time, making it a better option for longer outdoor sessions, travel videos, and creative shots.",
 
   5: "This wireless lavalier microphone for iPhone is great for TikTok videos, Instagram reels, YouTube content, interviews, voiceovers, and live selling. It helps capture clearer audio without needing a bulky microphone setup.",
 
@@ -19,52 +19,38 @@ const productDescriptions = {
 
   9: "This electric detangling brush helps smooth knots while giving your scalp a relaxing massage. It is a cute and useful beauty tool for everyday hair care, detangling, and self-care routines.",
 
-  10: "This 60W fast charging multi-function cable storage box keeps your charging cables organized and ready to use. It is perfect for travel, purses, desks, cars, and anyone who hates tangled cords."
-};
-const productReviews = {
-  1: [
-    "Works great for my laptop setup. Super helpful for connecting to my monitor.",
-    "Small, easy to carry, and exactly what I needed."
-  ],
-  2: [
-    "Love having everything charge in one place. Looks clean on my nightstand.",
-    "Great price and works well for my phone and earbuds."
-  ],
-  3: [
-    "Fun drone for the price. The extra battery is definitely worth it.",
-    "Good starter drone and easy to use."
-  ],
-  4: [
-    "The 3 batteries make a big difference. Great for longer use.",
-    "Nice drone bundle for the price."
-  ],
-  5: [
-    "The audio sounds way better than my phone mic.",
-    "Perfect for recording videos and content."
-  ],
-  6: [
-    "Cute little camera for trips and outdoor videos.",
-    "Good value for the price."
-  ],
-  7: [
-    "Great for movie nights. Easy to set up.",
-    "Nice picture for a small projector."
-  ],
-  8: [
-    "Makes me feel safer when traveling.",
-    "Simple but loud enough to get attention."
-  ],
-  9: [
-    "Feels good on my scalp and helps with tangles.",
-    "Cute and actually useful."
-  ],
-  10: [
-    "Keeps my cords organized and easy to find.",
-    "Perfect for travel and my purse."
-  ]
-};
+  10: "This 60W fast charging multi-function cable storage box keeps your charging cables organized and ready to use. It is perfect for travel, purses, desks, cars, and anyone who hates tangled cords.",
 
-function getProductIdFromUrl() {
+  11: "This portable mini desk vacuum cleaner is perfect for keeping desks, vanities, keyboards, and small spaces clean. It is compact, easy to use, and great for crumbs, dust, and everyday messes.",
+
+  12: "This LED sunset projection lamp adds a warm, trendy glow to bedrooms, content setups, photos, and cozy spaces. It is perfect for creating aesthetic lighting for pictures, videos, or relaxing at home.",
+
+  13: "These Bluetooth sleep headphones with an eye mask are made for relaxing, sleeping, traveling, or listening to music without bulky headphones. They are great for naps, flights, and bedtime comfort.",
+
+  14: "This mini portable blender cup makes it easy to mix smoothies, protein drinks, juices, and shakes on the go. It is a convenient pick for work, school, the gym, or quick healthy drinks at home.",
+
+  15: "This rechargeable electric makeup brush cleaner helps clean makeup brushes faster and easier. It is a helpful beauty tool for keeping brushes fresh, reducing buildup, and making your makeup routine feel more organized.",
+
+  16: "This magnetic car phone holder keeps your phone secure and easy to see while driving. It is useful for navigation, hands-free viewing, and keeping your phone within reach without clutter.",
+
+  17: "This smart motion sensor LED night light is great for hallways, bedrooms, closets, bathrooms, and entryways. It automatically lights up when motion is detected, making nighttime movement easier and safer.",
+
+  18: "This phone tripod with Bluetooth remote is perfect for content creators, selfies, TikToks, photos, videos, live streams, and hands-free recording. It helps make filming easier without needing someone else to hold your phone.",
+
+  19: "This USB rechargeable neck fan helps keep you cool while walking, working, traveling, doing makeup, or spending time outdoors. It is lightweight, hands-free, and easy to recharge.",
+
+  20: "This mini WiFi indoor security camera helps monitor your home, apartment, room, office, or pets. It is a useful security gadget for keeping an eye on important spaces from your phone.",
+
+  21: "This rechargeable heated eyelash curler helps lift and shape lashes for a more polished look. It is a cute beauty tool for everyday makeup routines, travel, and quick touch-ups.",
+
+  22: "This LED lighted makeup mirror gives you better lighting while doing makeup, skincare, brows, or lashes. It is great for vanities, bedrooms, dorms, and getting ready with a clearer view.",
+
+  23: "This electric facial cleansing brush helps deep clean your skin and refresh your skincare routine. It is designed for gentle cleansing, exfoliating, and making your face feel smoother and cleaner.",
+
+  24: "This wireless door and window alarm sensor adds extra protection to your home, apartment, dorm, or office. It helps alert you when a door or window is opened, giving you more peace of mind.",
+
+  25: "This portable personal safety alarm keychain is a small safety accessory you can carry on keys, bags, or backpacks. It is useful for travel, walks, parking lots, school, and everyday peace of mind."
+};function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return Number(params.get("id"));
 }

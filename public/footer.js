@@ -13,7 +13,6 @@
         <a href="/faq.html">FAQ</a>
         <a href="/track.html">Track Order</a>
 <a href="/returns.html">Return Policy</a>
-<a href="/terms.html">Terms of Service</a>
       </div>
 
       <p class="footer-small">© 2026 Kori Sellz. All rights reserved.</p>

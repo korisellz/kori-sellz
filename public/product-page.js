@@ -74,10 +74,7 @@ function getProductBadge(productId) {
 
 function getDescription(product) {
   return (
-    productDescriptions[product.id] ||
-    "A trending Kori Sellz product selected for everyday convenience, style, and value."
-  );
-}
+   ${productDescriptions[product.id] || "This product is part of the Kori Sellz collection and was selected for everyday usefulness, style, and affordability."}
 
 function getShippingEstimate(product) {
   if (product.category === "Beauty") {

@@ -85,7 +85,7 @@ const products = [
     name: "4K Waterproof Sport Camera",
     category: "Drones & Cameras",
     sku: "CJXFXJSM00002-Black",
-    cost: 22.57
+    cost: 22.57,
     price: 29.99,
     image: "https://cf.cjdropshipping.com/15287328/1102491960640.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
@@ -124,7 +124,7 @@ const products = [
     cost: 6.31,
     price: 9.99,
     image: "https://oss-cf.cjdropshipping.com/product/2025/04/17/10/538aa4eb-0082-41be-8cc2-90cf619f2b08.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
-  }
+  },
   {
     id: 11,
     name: "Car Vacuum Cleaner Powerful Mini - Car Dual - Purpose Power",
@@ -214,7 +214,7 @@ const products = [
     cost: 15.96,
     price: 19.99,
     image: "https://cf.cjdropshipping.com/28c4098e-9248-4316-bfbe-0c1474525187.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
-  }
+  },
   {
     id: 21,
     name: "Rechargeable Heated Eyelash Curler",
@@ -229,7 +229,7 @@ const products = [
     name: "LED makeup mirror",
     category: "Beauty",
     sku: "CJJJJTJT02992-black",
-    cost: 13.31
+    cost: 13.31,
     price: 24.99,
     image: "https://cf.cjdropshipping.com/15641568/23132624195.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60"
   },

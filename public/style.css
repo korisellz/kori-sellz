@@ -796,9 +796,10 @@ button:hover {
     font-size: 15px;
   }
 
-  .cart-item {
-    font-size: 14px;
-  }
+.cart-icon {
+  font-size: 22px;
+  line-height: 1;
+}
 
   .qty-controls {
     justify-content: center;

@@ -1,7 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Dashboard | Kori Sellz</title>
+  <title>Kori Sellz Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/style.css">
   <link rel="icon" type="image/jpeg" href="/kori-logo.jpeg">
@@ -17,182 +17,20 @@
   </header>
 
   <main class="tracking-page">
-    <div class="tracking-box admin-box">
-      <h2>Admin Dashboard</h2>
+    <div class="tracking-box">
+      <h2>Admin Orders</h2>
 
       <input id="passwordInput" type="password" placeholder="Admin password">
       <button onclick="loadOrders()">Load Orders</button>
 
-      <div id="statsGrid" class="admin-stats"></div>
       <div id="ordersResult"></div>
     </div>
   </main>
 
   <script>
-    function money(value) {
-      const amount = Number(value || 0);
-      return `$${amount.toFixed(2)}`;
-    }
-
-    function getOrderTotal(order) {
-      if (order.amountTotal) return Number(order.amountTotal) / 100;
-      if (order.amount_total) return Number(order.amount_total) / 100;
-      if (order.total) return Number(order.total);
-      if (order.orderTotal) return Number(order.orderTotal);
-      return 0;
-    }
-
-    function getCustomerName(order) {
-      return order.customerName || order.customer_name || order.name || "Customer";
-    }
-
-    function getCustomerEmail(order) {
-      return order.customerEmail || order.customer_email || order.email || "No email";
-    }
-
-    function getCustomerPhone(order) {
-      return order.customerPhone || order.customer_phone || order.phone || "No phone";
-    }
-
-    function getStripeSession(order) {
-      return order.stripeSessionId || order.stripe_session_id || order.sessionId || "N/A";
-    }
-
-    function getCjOrderId(order) {
-      return order.cjOrderId || order.cj_order_id || order.cjOrderCode || order.cj_order_code || "Not created";
-    }
-
-    function getStatus(order) {
-      return order.status || order.orderStatus || order.order_status || "Unknown";
-    }
-
-    function isTestOrder(order) {
-      return order.livemode === false || order.livemode === "false";
-    }
-
-    function getItems(order) {
-      if (!order.items) return [];
-
-      if (Array.isArray(order.items)) {
-        return order.items;
-      }
-
-      try {
-        return JSON.parse(order.items);
-      } catch {
-        return [];
-      }
-    }
-
-    function getBadgeHTML(order) {
-      const badges = [];
-
-      if (isTestOrder(order)) {
-        badges.push(`<span class="order-badge test">TEST ORDER</span>`);
-      } else {
-        badges.push(`<span class="order-badge live">LIVE ORDER</span>`);
-      }
-
-      const cj = getCjOrderId(order);
-
-      if (cj && cj !== "Not created") {
-        badges.push(`<span class="order-badge cj">CJ CREATED</span>`);
-      } else {
-        badges.push(`<span class="order-badge pending">CJ PENDING</span>`);
-      }
-
-      const status = getStatus(order).toLowerCase();
-
-      if (status.includes("error") || status.includes("failed")) {
-        badges.push(`<span class="order-badge error">ERROR</span>`);
-      } else {
-        badges.push(`<span class="order-badge paid">PAID</span>`);
-      }
-
-      return badges.join("");
-    }
-
-    function renderStats(orders) {
-      const totalOrders = orders.length;
-      const testOrders = orders.filter(isTestOrder).length;
-      const liveOrders = totalOrders - testOrders;
-
-      const cjOrders = orders.filter((order) => {
-        const cj = getCjOrderId(order);
-        return cj && cj !== "Not created";
-      }).length;
-
-      const revenue = orders.reduce((sum, order) => {
-        return sum + getOrderTotal(order);
-      }, 0);
-
-      document.getElementById("statsGrid").innerHTML = `
-        <div class="admin-stat-card">
-          <h3>${totalOrders}</h3>
-          <p>Total Orders</p>
-        </div>
-
-        <div class="admin-stat-card">
-          <h3>${liveOrders}</h3>
-          <p>Live Orders</p>
-        </div>
-
-        <div class="admin-stat-card">
-          <h3>${testOrders}</h3>
-          <p>Test Orders</p>
-        </div>
-
-        <div class="admin-stat-card">
-          <h3>${cjOrders}</h3>
-          <p>CJ Orders</p>
-        </div>
-
-        <div class="admin-stat-card">
-          <h3>${money(revenue)}</h3>
-          <p>Total Revenue</p>
-        </div>
-      `;
-    }
-
-    function renderOrderCard(order) {
-      const items = getItems(order);
-
-      const itemList = items.length
-        ? items.map((item) => `
-            <li>
-              ${item.name || "Product"} 
-              ${item.quantity ? `x ${item.quantity}` : ""}
-              ${item.price ? ` — $${Number(item.price).toFixed(2)}` : ""}
-            </li>
-          `).join("")
-        : "<li>No item details saved</li>";
-
-      return `
-        <div class="tracking-card admin-order-card">
-          <div class="order-badge-row">
-            ${getBadgeHTML(order)}
-          </div>
-
-          <h3>${getCustomerName(order)}</h3>
-
-          <p><strong>Email:</strong> ${getCustomerEmail(order)}</p>
-          <p><strong>Phone:</strong> ${getCustomerPhone(order)}</p>
-          <p><strong>Status:</strong> ${getStatus(order)}</p>
-          <p><strong>Mode:</strong> ${isTestOrder(order) ? "Test Order" : "Live Order"}</p>
-          <p><strong>Total:</strong> ${money(getOrderTotal(order))}</p>
-          <p><strong>Stripe Session:</strong> ${getStripeSession(order)}</p>
-          <p><strong>CJ Order ID:</strong> ${getCjOrderId(order)}</p>
-
-          <h4>Items</h4>
-          <ul>${itemList}</ul>
-        </div>
-      `;
-    }
-
     async function loadOrders() {
       const password = document.getElementById("passwordInput").value.trim();
       const resultBox = document.getElementById("ordersResult");
-      const statsGrid = document.getElementById("statsGrid");
 
       if (!password) {
         resultBox.innerHTML = "<p>Please enter your admin password.</p>";
@@ -200,7 +38,6 @@
       }
 
       resultBox.innerHTML = "<p>Loading orders...</p>";
-      statsGrid.innerHTML = "";
 
       try {
         const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(password)}`);
@@ -211,20 +48,78 @@
           return;
         }
 
-        if (!data.orders || !data.orders.length) {
+        if (!data.orders.length) {
           resultBox.innerHTML = "<p>No orders found yet.</p>";
           return;
         }
 
-        renderStats(data.orders);
+        resultBox.innerHTML = data.orders.map(order => `
+          <div class="tracking-card">
+            <h3>${order.customerName || order.customer_name || "Customer"}</h3>
 
-        resultBox.innerHTML = `
-          <h3 class="admin-section-title">Latest Orders</h3>
-          ${data.orders.map(renderOrderCard).join("")}
-        `;
+            <p><strong>Order ID:</strong> ${order.id}</p>
+            <p><strong>Email:</strong> ${order.customerEmail || order.customer_email || "N/A"}</p>
+            <p><strong>Phone:</strong> ${order.customerPhone || order.customer_phone || "N/A"}</p>
+            <p><strong>Status:</strong> ${order.status || "N/A"}</p>
+            <p><strong>CJ Order ID:</strong> ${order.cjOrderId || order.cj_order_id || "N/A"}</p>
+            <p><strong>Tracking:</strong> ${order.trackingNumber || order.tracking_number || "Not added yet"}</p>
+
+            <input 
+              id="tracking-${order.id}" 
+              placeholder="Enter tracking number"
+              value="${order.trackingNumber || order.tracking_number || ""}"
+            >
+
+            <input 
+              id="tracking-url-${order.id}" 
+              placeholder="Tracking URL optional"
+              value="${order.trackingUrl || order.tracking_url || ""}"
+            >
+
+            <button onclick="updateTracking('${order.id}')">
+              Update Tracking
+            </button>
+          </div>
+        `).join("");
       } catch (error) {
-        console.error("Admin dashboard error:", error);
         resultBox.innerHTML = "<p>Something went wrong loading orders.</p>";
+      }
+    }
+
+    async function updateTracking(orderId) {
+      const password = document.getElementById("passwordInput").value.trim();
+      const trackingNumber = document.getElementById(`tracking-${orderId}`).value.trim();
+      const trackingUrl = document.getElementById(`tracking-url-${orderId}`).value.trim();
+
+      if (!trackingNumber) {
+        alert("Please enter a tracking number.");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/admin/update-tracking", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            password,
+            orderId,
+            trackingNumber,
+            trackingUrl
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert("Tracking updated successfully!");
+          loadOrders();
+        } else {
+          alert(data.error || "Tracking update failed.");
+        }
+      } catch (error) {
+        alert("Something went wrong updating tracking.");
       }
     }
   </script>

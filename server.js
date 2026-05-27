@@ -870,7 +870,71 @@ app.get("/api/admin/orders", async (req, res) => {
       error: "Unauthorized"
     });
   }
+app.post("/api/admin/update-tracking", async (req, res) => {
+  try {
+    const { password, orderId, trackingNumber, trackingUrl } = req.body;
 
+    if (password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized"
+      });
+    }
+
+    if (!orderId || !trackingNumber) {
+      return res.status(400).json({
+        success: false,
+        error: "Order ID and tracking number are required"
+      });
+    }
+
+    if (!pool) {
+      return res.status(500).json({
+        success: false,
+        error: "Database not connected"
+      });
+    }
+
+    await pool.query(`
+      ALTER TABLE orders
+      ADD COLUMN IF NOT EXISTS tracking_number TEXT,
+      ADD COLUMN IF NOT EXISTS tracking_url TEXT
+    `);
+
+    const result = await pool.query(
+      `
+      UPDATE orders
+      SET 
+        tracking_number = $1,
+        tracking_url = $2,
+        status = 'Shipped'
+      WHERE id = $3
+      RETURNING *
+      `,
+      [trackingNumber, trackingUrl || null, orderId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Order not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Tracking updated successfully",
+      order: result.rows[0]
+    });
+  } catch (error) {
+    console.error("Update tracking error:", error.message);
+
+    res.status(500).json({
+      success: false,
+      error: "Failed to update tracking"
+    });
+  }
+});
   try {
     const orders = await getOrdersFromDatabase();
 

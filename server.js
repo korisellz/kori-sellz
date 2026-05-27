@@ -770,31 +770,42 @@ app.post("/api/checkout", async (req, res) => {
   try {
     const items = req.body.items;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({
-        error: "Cart is empty"
-      });
-    }
-
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
+
       shipping_address_collection: {
         allowed_countries: ["US"]
       },
+
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 550,
+              currency: "usd"
+            },
+            display_name: "Standard Shipping",
+            delivery_estimate: {
+              minimum: {
+                unit: "business_day",
+                value: 8
+              },
+              maximum: {
+                unit: "business_day",
+                value: 23
+              }
+            }
+          }
+        }
+      ],
+
       phone_number_collection: {
         enabled: true
       },
+
       customer_creation: "always",
-      metadata: {
-        items: JSON.stringify(
-          items.map((item) => ({
-            name: item.name,
-            sku: item.sku,
-            price: item.price,
-            quantity: item.quantity || 1
-          }))
-        )
-      },
+
       line_items: items.map((item) => ({
         price_data: {
           currency: "usd",
@@ -805,9 +816,15 @@ app.post("/api/checkout", async (req, res) => {
         },
         quantity: item.quantity || 1
       })),
+
       mode: "payment",
-      success_url: `${process.env.SITE_URL || "https://korisellz.com"}/success`,
-cancel_url: `${process.env.SITE_URL || "https://korisellz.com"}/cancel`
+
+      metadata: {
+        items: JSON.stringify(items)
+      },
+
+      success_url: "https://korisellz.com/success",
+      cancel_url: "https://korisellz.com/cancel"
     });
 
     res.json({ url: session.url });

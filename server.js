@@ -269,7 +269,7 @@ const products = [
   price: 29.99,
   image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
   description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
-  shipping: "Estimated delivery: 7-15 business days after processing."
+  shipping: "Estimated delivery: 7-20 business days after processing."
 }
 ];
 
@@ -720,7 +720,7 @@ app.post("/api/contact", async (req, res) => {
       });
     }
 
-    const supportEmail = process.env.SUPPORT_EMAIL || "korisellz@gmail.com";
+    const supportEmail = process.env.SUPPORT_EMAIL || "support@korisellz.com";
 
     const emailResponse = await resend.emails.send({
       from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",

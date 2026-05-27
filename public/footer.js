@@ -1,4 +1,4 @@
-﻿document.body.insertAdjacentHTML("beforeend", `
+document.body.insertAdjacentHTML("beforeend", `
   <footer class="site-footer">
     <div class="footer-brand">
       <strong>Kori Sellz</strong>
@@ -16,6 +16,6 @@
       <a href="/track.html">Track Order</a>
     </div>
 
-    <p class="footer-copy">© ${new Date().getFullYear()} Kori Sellz. All rights reserved.</p>
+    <p class="footer-copy">� ${new Date().getFullYear()} Kori Sellz. All rights reserved.</p>
   </footer>
 `);

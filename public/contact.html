@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Contact Us | Kori Sellz</title>
@@ -16,7 +16,7 @@
   <main class="policy-page contact-page">
     <h1>Contact Us</h1>
 
-    <p>Need help with an order? Fill out the form below and weâ€™ll get back to you as soon as possible.</p>
+    <p>Need help with an order? Fill out the form below and we’ll get back to you as soon as possible.</p>
 
     <form id="contactForm" class="contact-form">
       <label>Your Name</label>
@@ -39,8 +39,8 @@
     <div class="contact-card">
       <h2>Email Support</h2>
       <p>You can also email us directly at:</p>
-      <p><strong>korisellz@gmail.com</strong></p>
-      <a class="details-btn" href="mailto:korisellz@gmail.com?subject=Kori%20Sellz%20Order%20Help">Email Support</a>
+      <p><strong>support@korisellz.com</strong></p>
+      <a class="details-btn" href="mailto:support@korisellz.com?subject=Kori%20Sellz%20Order%20Help">Email Support</a>
     </div>
   </main>
 
@@ -70,13 +70,13 @@
         const data = await res.json();
 
         if (data.success) {
-          status.textContent = "Message sent successfully! Weâ€™ll get back to you soon.";
+          status.textContent = "Message sent successfully! We’ll get back to you soon.";
           document.getElementById("contactForm").reset();
         } else {
-          status.textContent = "Message failed to send. Please email korisellz@gmail.com directly.";
+          status.textContent = "Message failed to send. Please email support@korisellz.com directly.";
         }
       } catch (error) {
-        status.textContent = "Message failed to send. Please email korisellz@gmail.com directly.";
+        status.textContent = "Message failed to send. Please email support@korisellz.com directly.";
       }
     });
   </script>

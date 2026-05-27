@@ -749,7 +749,7 @@ app.post("/api/contact", async (req, res) => {
 
     await resend.emails.send({
       from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
-      to: process.env.SUPPORT_INBOX || "korisellz@gmail.com",
+      to: process.env.SUPPORT_INBOX || "korisellz@outlook.com",
       subject: `New Kori Sellz Contact Form Message from ${name}`,
       html: `
         <h2>New Contact Form Message</h2>

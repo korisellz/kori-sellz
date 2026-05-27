@@ -267,7 +267,7 @@ const products = [
   sku: "CJJD245497601AZ",
   cost: 15.23,
   price: 29.99,
-  image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60",
+  image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
   description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
   shipping: "Estimated delivery: 7-15 business days after processing."
 }

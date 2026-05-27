@@ -259,7 +259,18 @@ const products = [
     cost: 11.83,
     price: 19.99,
     image: "https://oss-cf.cjdropshipping.com/product/2024/08/28/01/1fcf48bf-a11d-456c-9407-345f89f507ee.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
-  }
+  },
+  {
+  id: 26,
+  name: "1080P Wireless WiFi Video Doorbell Camera",
+  category: "Home Security",
+  sku: "CJJD245497601AZ",
+  cost: 15.23,
+  price: 29.99,
+  image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60",
+  description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
+  shipping: "Estimated delivery: 7-15 business days after processing."
+}
 ];
 
 function escapeHtml(value) {

@@ -105,9 +105,17 @@ async function loadProductPage() {
 
   productContainer.innerHTML = "<p>Loading product...</p>";
 
-  try {
-    const res = await fetch("/api/products");
-    products = await res.json();
+try {
+  const res = await fetch(`/api/products/${productId}`);
+
+  if (!res.ok) {
+    throw new Error("Product not found");
+  }
+
+currentProduct = await res.json();
+
+const allProductsRes = await fetch("/api/products");
+products = await allProductsRes.json();
 
     currentProduct = products.find((product) => product.id === productId);
 

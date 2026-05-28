@@ -296,7 +296,6 @@ const products = [
     shipping: "Estimated delivery: 8-23 business days after processing."
   },
   {
-   {
     id: 29,
     name: "Hainatech 360° 4-Channel Dash Cam with GPS & WiFi",
     category: "Drones & Cameras",

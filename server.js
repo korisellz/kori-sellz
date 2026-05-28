@@ -296,14 +296,15 @@ const products = [
     shipping: "Estimated delivery: 8-23 business days after processing."
   },
   {
+   {
     id: 29,
     name: "Hainatech 360° 4-Channel Dash Cam with GPS & WiFi",
     category: "Drones & Cameras",
     sku: "CJHS232611301AZ",
     cost: 87.12,
     price: 99.99,
-    image: image: "https://cf.cjdropshipping.com/61f1303c-ee57-4ddb-8b3a-14cac921e848.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Upgrade your car security with this Hainatech 360° 4-channel dash cam featuring front, rear, inside, left, and right camera coverage. "Includes built-in GPS, WiFi connection, night vision, 24/7 parking monitor, loop recording, and a free 128GB memory card. Great for rideshare drivers, road trips, and everyday peace of mind.",
+    image: "https://cf.cjdropshipping.com/61f1303c-ee57-4ddb-8b3a-14cac921e848.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
+    description: "Upgrade your car security with this Hainatech 360° 4-channel dash cam featuring front, rear, inside, left, and right camera coverage. Includes built-in GPS, WiFi connection, night vision, 24/7 parking monitor, loop recording, and a free 128GB memory card. Great for rideshare drivers, road trips, and everyday peace of mind.",
     shipping: "Estimated delivery: 8-23 business days after processing."
   }
 ];

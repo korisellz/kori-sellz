@@ -927,3 +927,7 @@ button:hover {
     margin-right: 0;
   }
 }
+.trust-icon {
+  display: inline-block;
+  margin-right: 6px;
+}

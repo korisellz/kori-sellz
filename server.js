@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import cors from "cors";
 import Stripe from "stripe";
 import axios from "axios";
@@ -29,7 +29,7 @@ if (process.env.DATABASE_URL) {
 
 console.log("Stripe key loaded?", process.env.STRIPE_SECRET_KEY ? "YES" : "NO");
 console.log("Stripe webhook secret loaded?", process.env.STRIPE_WEBHOOK_SECRET ? "YES" : "NO");
-console.log("CJ token/key loaded?", process.env.CJ_ACCESS_TOKEN || process.env.CJ_EMAIL ? "YES" : "NO");
+console.log("CJ API key loaded?", process.env.CJ_ACCESS_TOKEN || process.env.CJ_EMAIL ? "YES" : "NO");
 console.log("Resend key loaded?", process.env.RESEND_API_KEY ? "YES" : "NO");
 console.log("Admin password loaded?", process.env.ADMIN_PASSWORD ? "YES" : "NO");
 console.log("Database loaded?", process.env.DATABASE_URL ? "YES" : "NO");
@@ -127,8 +127,6 @@ const products = [
     price: 9.99,
     image: "https://oss-cf.cjdropshipping.com/product/2025/04/17/10/538aa4eb-0082-41be-8cc2-90cf619f2b08.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   }
-
-  // Add your products 11-26 back here if this replacement removed them.
 ];
 
 /* ----------------------------- DATABASE ----------------------------- */
@@ -189,6 +187,12 @@ async function saveOrderToDatabase(order) {
     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
     ON CONFLICT (stripe_session_id)
     DO UPDATE SET
+      customer_name = EXCLUDED.customer_name,
+      customer_email = EXCLUDED.customer_email,
+      customer_phone = EXCLUDED.customer_phone,
+      shipping_address = EXCLUDED.shipping_address,
+      items = EXCLUDED.items,
+      livemode = EXCLUDED.livemode,
       status = EXCLUDED.status,
       cj_order_id = COALESCE(EXCLUDED.cj_order_id, orders.cj_order_id),
       tracking_number = COALESCE(EXCLUDED.tracking_number, orders.tracking_number),
@@ -216,7 +220,7 @@ async function saveOrderToDatabase(order) {
 }
 
 /* ----------------------------- STRIPE WEBHOOK ----------------------------- */
-/* Keep this BEFORE express.json() */
+/* This must stay BEFORE app.use(express.json()) */
 
 app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
   console.log("WEBHOOK TRIGGERED");
@@ -265,7 +269,11 @@ function parseItemsFromSession(session) {
 }
 
 function getShippingAddress(session) {
-  const shipping = session.collected_information?.shipping_details || session.shipping_details || {};
+  const shipping =
+    session.collected_information?.shipping_details ||
+    session.shipping_details ||
+    {};
+
   const address = shipping.address || {};
 
   return {
@@ -384,22 +392,22 @@ async function sendOrderToCJ(session, items, shipping) {
 
 async function sendConfirmationEmail(session, items, shipping) {
   if (!resend) {
-    console.log("No Resend API key. Skipping email.");
+    console.log("No Resend API key. Skipping confirmation email.");
     return;
   }
 
   if (!shipping.email) {
-    console.log("No customer email. Skipping email.");
+    console.log("No customer email. Skipping confirmation email.");
     return;
   }
 
   const orderNumber = makeStoreOrderNumber(session.id);
 
   const itemsHtml = items
-    .map(
-      (item) =>
-        `<li>${item.name} — Qty: ${item.quantity || 1} — $${Number(item.price).toFixed(2)}</li>`
-    )
+    .map((item) => {
+      const price = Number(item.price || 0).toFixed(2);
+      return `<li>${item.name} — Qty: ${item.quantity || 1} — $${price}</li>`;
+    })
     .join("");
 
   const emailResult = await resend.emails.send({
@@ -415,7 +423,7 @@ async function sendConfirmationEmail(session, items, shipping) {
       <h3>Items Ordered:</h3>
       <ul>${itemsHtml}</ul>
 
-      <p><strong>Shipping:</strong> Standard shipping is $5.50. Estimated delivery is 8-23 business days after processing.</p>
+      <p><strong>Shipping:</strong> Standard shipping is $5.50. Orders $50 or more receive free standard shipping. Estimated delivery is 8-23 business days after processing.</p>
 
       <p>You can track your order here:</p>
       <p><a href="https://korisellz.com/track.html">https://korisellz.com/track.html</a></p>
@@ -481,61 +489,63 @@ app.get("/api/products", (req, res) => {
 app.post("/api/checkout", async (req, res) => {
   try {
     const items = req.body.items || [];
-const subtotal = items.reduce((sum, item) => {
-  return sum + Number(item.price) * (item.quantity || 1);
-}, 0);
 
-const shippingOptions =
-  subtotal >= 50
-    ? [
-        {
-          shipping_rate_data: {
-            type: "fixed_amount",
-            fixed_amount: {
-              amount: 0,
-              currency: "usd"
-            },
-            display_name: "Free Standard Shipping",
-            delivery_estimate: {
-              minimum: {
-                unit: "business_day",
-                value: 8
-              },
-              maximum: {
-                unit: "business_day",
-                value: 23
-              }
-            }
-          }
-        }
-      ]
-    : [
-        {
-          shipping_rate_data: {
-            type: "fixed_amount",
-            fixed_amount: {
-              amount: 550,
-              currency: "usd"
-            },
-            display_name: "Standard Shipping",
-            delivery_estimate: {
-              minimum: {
-                unit: "business_day",
-                value: 8
-              },
-              maximum: {
-                unit: "business_day",
-                value: 23
-              }
-            }
-          }
-        }
-      ];
     if (!items.length) {
       return res.status(400).json({
         error: "Cart is empty"
       });
     }
+
+    const subtotal = items.reduce((sum, item) => {
+      return sum + Number(item.price) * (item.quantity || 1);
+    }, 0);
+
+    const shippingOptions =
+      subtotal >= 50
+        ? [
+            {
+              shipping_rate_data: {
+                type: "fixed_amount",
+                fixed_amount: {
+                  amount: 0,
+                  currency: "usd"
+                },
+                display_name: "Free Standard Shipping",
+                delivery_estimate: {
+                  minimum: {
+                    unit: "business_day",
+                    value: 8
+                  },
+                  maximum: {
+                    unit: "business_day",
+                    value: 23
+                  }
+                }
+              }
+            }
+          ]
+        : [
+            {
+              shipping_rate_data: {
+                type: "fixed_amount",
+                fixed_amount: {
+                  amount: 550,
+                  currency: "usd"
+                },
+                display_name: "Standard Shipping",
+                delivery_estimate: {
+                  minimum: {
+                    unit: "business_day",
+                    value: 8
+                  },
+                  maximum: {
+                    unit: "business_day",
+                    value: 23
+                  }
+                }
+              }
+            }
+          ];
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -544,7 +554,7 @@ const shippingOptions =
         allowed_countries: ["US"]
       },
 
-    shipping_options: shippingOptions,
+      shipping_options: shippingOptions,
 
       phone_number_collection: {
         enabled: true
@@ -573,12 +583,15 @@ const shippingOptions =
       cancel_url: "https://korisellz.com/cancel"
     });
 
-    res.json({ url: session.url });
+    res.json({
+      url: session.url
+    });
   } catch (error) {
     console.error("Checkout error:", error.message);
 
     res.status(500).json({
-      error: "Checkout failed"
+      error: "Checkout failed",
+      details: error.message
     });
   }
 });
@@ -683,9 +696,36 @@ app.get("/api/admin/orders", async (req, res) => {
       LIMIT 100
     `);
 
+    const orders = result.rows.map((order) => ({
+      id: order.id,
+      stripeSessionId: order.stripe_session_id,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone,
+      shippingAddress: order.shipping_address,
+      items: order.items,
+      livemode: order.livemode,
+      status: order.status,
+      cjOrderId: order.cj_order_id,
+      trackingNumber: order.tracking_number,
+      trackingUrl: order.tracking_url,
+      error: order.error,
+      createdAt: order.created_at,
+
+      stripe_session_id: order.stripe_session_id,
+      customer_name: order.customer_name,
+      customer_email: order.customer_email,
+      customer_phone: order.customer_phone,
+      shipping_address: order.shipping_address,
+      cj_order_id: order.cj_order_id,
+      tracking_number: order.tracking_number,
+      tracking_url: order.tracking_url,
+      created_at: order.created_at
+    }));
+
     res.json({
       success: true,
-      orders: result.rows
+      orders
     });
   } catch (error) {
     console.error("Admin orders error:", error.message);
@@ -728,7 +768,7 @@ app.post("/api/admin/update-tracking", async (req, res) => {
       SET
         tracking_number = $1,
         tracking_url = $2,
-        status = 'Shipped'
+        status = 'Processing - Tracking Created'
       WHERE id = $3
       RETURNING *
       `,
@@ -777,7 +817,7 @@ app.post("/api/contact", async (req, res) => {
 
     await resend.emails.send({
       from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
-      to: process.env.SUPPORT_INBOX || "korisellz@outlook.com",
+      to: process.env.SUPPORT_INBOX || "support@korisellz.com",
       subject: `New Kori Sellz Contact Form Message from ${name}`,
       html: `
         <h2>New Contact Form Message</h2>

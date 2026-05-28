@@ -1,4 +1,4 @@
-﻿document.body.insertAdjacentHTML("beforeend", `
+document.body.insertAdjacentHTML("beforeend", `
   <footer class="site-footer">
    <div class="footer-brand">
   <strong>Kori Sellz</strong>

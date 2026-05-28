@@ -599,11 +599,73 @@ app.post("/api/checkout", async (req, res) => {
 app.get("/success", (req, res) => {
   res.send("Payment successful! Your order is being processed.");
 });
-
 app.get("/cancel", (req, res) => {
-  res.send("Payment canceled.");
-});
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Payment Canceled | Kori Sellz</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: #0b0d1f;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          text-align: center;
+          padding: 20px;
+        }
 
+        .box {
+          background: #15172e;
+          border: 1px solid #2f335f;
+          border-radius: 18px;
+          padding: 35px;
+          max-width: 500px;
+          box-shadow: 0 10px 25px #0006;
+        }
+
+        h1 {
+          color: white;
+          margin-bottom: 10px;
+        }
+
+        p {
+          color: #ddd;
+          line-height: 1.5;
+        }
+
+        a {
+          display: inline-block;
+          margin-top: 20px;
+          background: white;
+          color: #151B54;
+          text-decoration: none;
+          padding: 12px 20px;
+          border-radius: 999px;
+          font-weight: bold;
+        }
+
+        a:hover {
+          background: #e6e6e6;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <h1>Payment Canceled</h1>
+        <p>Your payment was canceled and you were not charged.</p>
+        <p>You can return to Kori Sellz and continue shopping whenever you're ready.</p>
+        <a href="/">Return to Kori Sellz</a>
+      </div>
+    </body>
+    </html>
+  `);
+});
 app.get("/api/track/:search", async (req, res) => {
   try {
     const search = decodeURIComponent(req.params.search).trim();

@@ -281,7 +281,7 @@ const products = [
     cost: 32.71,
     price: 40.99,
     image: "https://cf.cjdropshipping.com/a451d26b-9b2c-48aa-8dfb-6949d55d12fb.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Record every angle with this 360° 4-channel dash cam featuring 1080P front video, rear/left/right/interior coverage, IR night vision, loop recording, motion detection, and a free 32GB memory card. Great for everyday driving, rideshare drivers, and added vehicle security.",
+    description: "Get full driving coverage with this 360° 4-channel dash cam. It records the front, rear, left, right, and inside views to help protect your vehicle on the road or while parked. Features IR night vision, loop recording, motion detection, and includes a free 32GB memory card.",
     shipping: "Estimated delivery: 8-23 business days after processing."
   },
   {
@@ -292,7 +292,7 @@ const products = [
     cost: 44.58,
     price: 50.99,
     image: "https://cf.cjdropshipping.com/a451d26b-9b2c-48aa-8dfb-6949d55d12fb.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Capture more of the road with this 4-channel 360° dash cam featuring 1080P front recording, left/right side coverage, rear view recording, night vision, G-sensor impact detection, parking monitor, loop recording, and a 128GB memory card. A great car safety upgrade for daily drivers, rideshare drivers, and road trips.",
+    description: "Drive with extra peace of mind using this 4-channel 360° dash cam. It features 1080P front recording, left and right side coverage, rear recording, night vision, G-sensor impact detection, parking monitor, loop recording, and a 128GB memory card for extended storage.",
     shipping: "Estimated delivery: 8-23 business days after processing."
   },
   {
@@ -303,7 +303,7 @@ const products = [
     cost: 87.12,
     price: 99.99,
     image: "https://cf.cjdropshipping.com/61f1303c-ee57-4ddb-8b3a-14cac921e848.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Upgrade your car security with this Hainatech 360° 4-channel dash cam featuring front, rear, inside, left, and right camera coverage. Includes built-in GPS, WiFi connection, night vision, 24/7 parking monitor, loop recording, and a free 128GB memory card. Great for rideshare drivers, road trips, and everyday peace of mind.",
+    description: "Upgrade your car security with this Hainatech 360° 4-channel dash cam. It records front, rear, inside, left, and right views and includes built-in GPS, WiFi, night vision, 24/7 parking monitoring, loop recording, and a free 128GB memory card. Perfect for daily drivers, rideshare drivers, and road trips.",
     shipping: "Estimated delivery: 8-23 business days after processing."
   }
 ];

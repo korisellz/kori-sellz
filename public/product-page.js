@@ -1,44 +1,37 @@
 let products = [];
+let currentProduct = null;
+let cart = JSON.parse(localStorage.getItem("koriCart")) || [];
 
-const productDescriptions = {
-  1: "Connect your Type-C device to HDMI, VGA, USB, and more with this compact 5-in-1 adapter. Perfect for laptops, monitors, projectors, and everyday tech setups.",
-  2: "Keep your phone, earbuds, and smartwatch powered with this sleek 4-in-1 magnetic wireless charging station. Great for desks, nightstands, and travel setups.",
-  3: "Capture smooth aerial shots with this V14 Professional 6K HD dual camera drone. Comes with 2 batteries so you can fly longer and create more content.",
-  4: "The V14 Professional 6K HD drone with 3 batteries gives you extra flight time, dual-camera recording, and a compact design for creators and hobby flyers.",
-  5: "Record clearer audio for videos, lives, interviews, and content creation with this wireless lavalier microphone for iPhone.",
-  6: "Take your adventures anywhere with this 4K waterproof sport camera. Perfect for outdoor videos, action shots, travel, and everyday content.",
-  7: "Turn any room into a mini theater with this compact 1080P LED projector. Great for movies, gaming, parties, and cozy nights in.",
-  8: "Add an extra layer of protection with this intelligent door stop alarm. Great for apartments, hotels, dorms, and home security.",
-  9: "Detangle and massage your scalp with this electric hair brush designed to smooth knots while giving a relaxing scalp massage.",
-  10: "Stay organized with this multi-function charging cable storage box. It keeps cables neat while supporting fast charging on the go.",
-  11: "This portable mini desk vacuum cleaner is perfect for keeping desks, vanities, keyboards, and small spaces clean. It is compact, easy to use, and great for crumbs, dust, and everyday messes.",
-  12: "This LED sunset projection lamp adds a warm, trendy glow to bedrooms, content setups, photos, and cozy spaces. It is perfect for creating aesthetic lighting for pictures, videos, or relaxing at home.",
-  13: "These Bluetooth sleep headphones with an eye mask are made for relaxing, sleeping, traveling, or listening to music without bulky headphones. They are great for naps, flights, and bedtime comfort.",
-  14: "This mini portable blender cup makes it easy to mix smoothies, protein drinks, juices, and shakes on the go. It is a convenient pick for work, school, the gym, or quick healthy drinks at home.",
-  15: "This rechargeable electric makeup brush cleaner helps clean makeup brushes faster and easier. It is a helpful beauty tool for keeping brushes fresh, reducing buildup, and making your makeup routine feel more organized.",
-  16: "This magnetic car phone holder keeps your phone secure and easy to see while driving. It is useful for navigation, hands-free viewing, and keeping your phone within reach without clutter.",
-  17: "This smart motion sensor LED night light is great for hallways, bedrooms, closets, bathrooms, and entryways. It automatically lights up when motion is detected, making nighttime movement easier and safer.",
-  18: "This phone tripod with Bluetooth remote is perfect for content creators, selfies, TikToks, photos, videos, live streams, and hands-free recording.",
-  19: "This USB rechargeable neck fan helps keep you cool while walking, working, traveling, doing makeup, or spending time outdoors. It is lightweight, hands-free, and easy to recharge.",
-  20: "This mini WiFi indoor security camera helps monitor your home, apartment, room, office, or pets. It is a useful security gadget for keeping an eye on important spaces from your phone.",
-  21: "This rechargeable heated eyelash curler helps lift and shape lashes for a more polished look. It is a cute beauty tool for everyday makeup routines, travel, and quick touch-ups.",
-  22: "This LED lighted makeup mirror gives you better lighting while doing makeup, skincare, brows, or lashes. It is great for vanities, bedrooms, dorms, and getting ready with a clearer view.",
-  23: "This electric facial cleansing brush helps deep clean your skin and refresh your skincare routine. It is designed for gentle cleansing, exfoliating, and making your face feel smoother and cleaner.",
-  24: "This wireless door and window alarm sensor adds extra protection to your home, apartment, dorm, or office. It helps alert you when a door or window is opened.",
-  25: "This portable personal safety alarm keychain is a small safety accessory you can carry on keys, bags, or backpacks. It is useful for travel, walks, parking lots, school, and everyday peace of mind."
-};
-
-const productReviews = {
-  1: ["Works great for my laptop setup.", "Small, easy to carry, and exactly what I needed."],
-  2: ["Love having everything charge in one place.", "Great price and works well."],
-  3: ["Fun drone for the price.", "Good starter drone and easy to use."],
-  4: ["The 3 batteries make a big difference.", "Nice drone bundle for the price."],
-  5: ["The audio sounds way better than my phone mic.", "Perfect for recording videos."],
-  6: ["Cute little camera for trips.", "Good value for the price."],
-  7: ["Great for movie nights.", "Nice picture for a small projector."],
-  8: ["Makes me feel safer when traveling.", "Simple but loud enough."],
-  9: ["Feels good on my scalp.", "Cute and useful."],
-  10: ["Keeps my cords organized.", "Perfect for travel."]
+const fallbackDescriptions = {
+  1: "A compact 5-in-1 Type-C adapter that helps connect your device to HDMI, VGA, and other display options. Great for work, streaming, school, and travel.",
+  2: "Charge multiple devices in one place with this sleek 4-in-1 magnetic wireless charging station. Perfect for phones, watches, earbuds, and everyday desk setups.",
+  3: "Capture aerial shots with this V14 dual camera drone featuring HD recording, foldable design, and two batteries for extra flight time.",
+  4: "A foldable dual camera drone with HD recording and three batteries for longer use. Great for beginners, travel shots, and outdoor content.",
+  5: "A wireless lavalier microphone made for creators, vloggers, interviews, TikTok videos, and everyday content recording.",
+  6: "A compact waterproof sport camera designed for outdoor activities, travel, action shots, and everyday video recording.",
+  7: "A mini LED projector for movie nights, small rooms, gaming setups, and portable entertainment.",
+  8: "A portable door stop alarm designed to help add extra security at home, hotels, dorms, apartments, and travel stays.",
+  9: "A gentle electric detangling brush designed to help smooth hair while massaging the scalp for easier everyday styling.",
+  10: "A compact cable storage box with fast charging support, perfect for keeping your everyday tech accessories organized.",
+  11: "A portable mini car vacuum cleaner for quick cleanups, car interiors, small messes, and everyday convenience.",
+  12: "Create a cozy aesthetic vibe with this LED sunset projection lamp, perfect for photos, bedrooms, videos, and relaxing spaces.",
+  13: "A soft Bluetooth sleep mask with built-in headphones, great for relaxing, travel, meditation, and sleeping with music or white noise.",
+  14: "A portable blender cup designed for smoothies, shakes, fruit drinks, and quick blends on the go.",
+  15: "A rechargeable makeup brush cleaner designed to make cleaning beauty tools faster, easier, and more convenient.",
+  16: "A magnetic phone holder with wireless charging support, perfect for hands-free driving and keeping your phone powered on the road.",
+  17: "A motion sensor LED night light for hallways, bedrooms, bathrooms, closets, and added visibility around your home.",
+  18: "A phone tripod with Bluetooth remote for selfies, content creation, livestreaming, recording, and hands-free photos.",
+  19: "A USB rechargeable neck fan designed for hands-free cooling during travel, work, outdoor activities, and hot days.",
+  20: "A compact WiFi indoor security camera for checking on rooms, pets, small spaces, and everyday home monitoring.",
+  21: "A rechargeable heated eyelash curler designed to help lift and style lashes quickly for everyday beauty routines.",
+  22: "A bright LED makeup mirror designed for beauty routines, skincare, travel, and better lighting while getting ready.",
+  23: "An electric facial cleansing brush designed to support daily skincare routines and help cleanse more effectively.",
+  24: "A 6-piece wireless home security alarm set for doors, windows, apartments, dorms, and small spaces.",
+  25: "A portable personal safety alarm set that can be carried on keys, bags, or backpacks for extra peace of mind.",
+  26: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
+  27: "Get full driving coverage with this 360° 4-channel dash cam. It records the front, rear, left, right, and inside views to help protect your vehicle on the road or while parked. Features IR night vision, loop recording, motion detection, and includes a free 32GB memory card.",
+  28: "Drive with extra peace of mind using this 4-channel 360° dash cam. It features 1080P front recording, left and right side coverage, rear recording, night vision, G-sensor impact detection, parking monitor, loop recording, and a 128GB memory card for extended storage.",
+  29: "Upgrade your car security with this Hainatech 360° 4-channel dash cam. It records front, rear, inside, left, and right views and includes built-in GPS, WiFi, night vision, 24/7 parking monitoring, loop recording, and a free 128GB memory card. Perfect for daily drivers, rideshare drivers, and road trips."
 };
 
 function getProductIdFromUrl() {
@@ -47,240 +40,226 @@ function getProductIdFromUrl() {
 }
 
 function getDescription(product) {
-  return productDescriptions[product.id] || "This product is part of the Kori Sellz collection and was selected for everyday usefulness, style, and affordability.";
+  return (
+    product.description ||
+    fallbackDescriptions[product.id] ||
+    "This product was selected by Kori Sellz for everyday usefulness, quality, and affordability."
+  );
 }
 
-function getProductBadge(productId) {
+function getBadge(product) {
   const badges = {
-    1: "Best Seller",
-    2: "Popular",
-    3: "Best Seller",
-    4: "New Arrival",
-    5: "Creator Pick",
-    6: "Sale",
-    7: "Home Favorite",
+    1: "Tech Essential",
+    2: "Best Seller",
+    3: "Drone Pick",
+    4: "Extended Battery",
+    5: "Creator Favorite",
+    6: "Action Camera",
+    7: "Home Entertainment",
     8: "Security Pick",
-    9: "Beauty Find",
-    10: "Low Price",
-    11: "Desk Essential",
-    12: "Aesthetic Pick",
-    13: "Travel Pick",
-    14: "Wellness Pick",
-    15: "Beauty Tool",
-    16: "Car Essential",
-    17: "Home Favorite",
-    18: "Creator Pick",
+    9: "Beauty Tool",
+    10: "Travel Friendly",
+    11: "Car Essential",
+    12: "Aesthetic Find",
+    13: "Relaxation Pick",
+    14: "Kitchen Gadget",
+    15: "Beauty Essential",
+    16: "Car Tech",
+    17: "Home Essential",
+    18: "Creator Tool",
     19: "Summer Pick",
-    20: "Security Pick",
-    21: "Beauty Find",
-    22: "Vanity Favorite",
-    23: "Skincare Pick",
-    24: "Security Pick",
-    25: "Safety Pick"
+    20: "Security Camera",
+    21: "Beauty Pick",
+    22: "Glow Up",
+    23: "Skincare Tool",
+    24: "Home Security",
+    25: "Safety Pick",
+    26: "Doorbell Camera",
+    27: "Car Tech",
+    28: "Road Safety",
+    29: "Premium Dash Cam"
   };
 
-  return badges[productId] || "Trending";
+  return badges[product.id] || product.category || "Kori Pick";
 }
 
-function getShippingEstimate(product) {
-  if (product.category === "Beauty") {
-    return "Estimated delivery: 7-14 business days after processing.";
-  }
-
-  return "Estimated delivery: 7-15 business days after processing.";
+function getRating(product) {
+  const rating = product.rating || 4.8;
+  const reviews = product.reviews || product.id * 13 + 42;
+  return `${rating} rating • ${reviews} reviews`;
 }
 
-function renderReviews(product) {
-  const reviews = productReviews[product.id] || [
-    "Great product and easy checkout experience.",
-    "Good value and helpful order updates."
-  ];
-
-  return reviews.map((review) => `
-    <div class="review-card">
-      <div class="rating">★★★★★</div>
-      <p>"${review}"</p>
-      <span>Verified-style customer review</span>
-    </div>
-  `).join("");
-}
-
-function getStockText(product) {
-  const inventory = product.inventory || 12;
-
-  if (inventory <= 5) {
-    return `Low stock — only ${inventory} left`;
-  }
-
-  return `In stock — ${inventory} available`;
+function getShipping(product) {
+  return product.shipping || "Estimated delivery: 8-23 business days after processing.";
 }
 
 async function loadProductPage() {
-  const res = await fetch("/api/products");
-
-  if (!res.ok) {
-    throw new Error("Products API failed to load.");
-  }
-
-  products = await res.json();
-
-  products = products.map((product) => ({
-    ...product,
-    category: product.category || "Tech Accessories",
-    rating: 4.8,
-    inventory: Math.floor(Math.random() * 20) + 5,
-    badge: getProductBadge(product.id)
-  }));
-
   const productId = getProductIdFromUrl();
-  const product = products.find((item) => item.id === productId);
+  const productContainer = document.getElementById("productDetails");
+  const relatedContainer = document.getElementById("relatedProducts");
 
-  if (!product) {
-    document.getElementById("productDetail").innerHTML = `
-      <h1>Product not found</h1>
-      <p>This product may no longer be available.</p>
-      <a class="details-btn" href="/">Return to Store</a>
-    `;
+  if (!productContainer) {
+    console.error("Missing #productDetails container in product.html");
     return;
   }
 
-  renderProduct(product);
-  renderRelatedProducts(product);
+  productContainer.innerHTML = "<p>Loading product...</p>";
+
+  try {
+    const res = await fetch("/api/products");
+    products = await res.json();
+
+    currentProduct = products.find((product) => product.id === productId);
+
+    if (!currentProduct) {
+      productContainer.innerHTML = `
+        <div class="tracking-box">
+          <h1>Product Not Found</h1>
+          <p>We could not find this product.</p>
+          <a class="track-link" href="/">Back to Store</a>
+        </div>
+      `;
+      return;
+    }
+
+    renderProductDetails(currentProduct);
+    renderRelatedProducts(currentProduct);
+
+    if (relatedContainer && relatedContainer.innerHTML.trim() === "") {
+      relatedContainer.innerHTML = "<p>No related products found.</p>";
+    }
+  } catch (error) {
+    console.error("Product page load error:", error);
+    productContainer.innerHTML = `
+      <div class="tracking-box">
+        <h1>Product Loading Error</h1>
+        <p>Something went wrong loading this product. Please refresh the page.</p>
+        <a class="track-link" href="/">Back to Store</a>
+      </div>
+    `;
+  }
 }
 
-function renderProduct(product) {
-  document.title = `${product.name} | Kori Sellz`;
-const metaDescription = document.querySelector('meta[name="description"]');
-if (metaDescription) {
-  metaDescription.setAttribute(
-    "content",
-    `${product.name} from Kori Sellz. ${getDescription(product).slice(0, 140)}`
-  );
-}
+function renderProductDetails(product) {
+  const productContainer = document.getElementById("productDetails");
 
-const ogTitle = document.querySelector('meta[property="og:title"]');
-if (ogTitle) {
-  ogTitle.setAttribute("content", `${product.name} | Kori Sellz`);
-}
-
-const ogDescription = document.querySelector('meta[property="og:description"]');
-if (ogDescription) {
-  ogDescription.setAttribute(
-    "content",
-    getDescription(product).slice(0, 180)
-  );
-}
-
-const ogImage = document.querySelector('meta[property="og:image"]');
-if (ogImage) {
-  ogImage.setAttribute("content", product.image);
-}
-  document.getElementById("productDetail").innerHTML = `
-    <div class="product-detail-layout">
-      <div class="product-image-box">
-        <img src="${product.image}" alt="${product.name}">
+  productContainer.innerHTML = `
+    <section class="product-detail-card">
+      <div class="product-detail-image-wrap">
+        <span class="badge">${getBadge(product)}</span>
+        <img class="product-detail-image" src="${product.image}" alt="${product.name}">
       </div>
 
-      <div class="product-info-box">
-        <div class="badge-row">
-          <span class="badge">${product.category}</span>
-          <span class="product-badge">${product.badge}</span>
-        </div>
-
+      <div class="product-detail-info">
+        <p class="badge">${product.category || "Kori Sellz"}</p>
         <h1>${product.name}</h1>
 
         <div class="rating">★★★★★</div>
-        <p class="review-note">${product.rating}/5 average rating</p>
+        <p>${getRating(product)}</p>
 
-        <p class="detail-price">$${product.price.toFixed(2)}</p>
+        <p class="price">$${Number(product.price).toFixed(2)}</p>
 
-        <p class="stock">${getStockText(product)}</p>
+        <p class="product-description">${getDescription(product)}</p>
 
-        <h3>Description</h3>
-        <p>${getDescription(product)}</p>
-
-        <h3>Shipping Estimate</h3>
-        <p>${getShippingEstimate(product)}</p>
+        <div class="product-highlights">
+          <p><strong>Shipping:</strong> ${getShipping(product)}</p>
+          <p><strong>Checkout:</strong> Secure payment through Stripe.</p>
+          <p><strong>Support:</strong> Contact Kori Sellz anytime if you need help with your order.</p>
+        </div>
 
         <div class="product-actions">
-          <button class="buy-now large-buy" onclick="buyNow(${product.id})">Buy Now</button>
-          <a class="details-btn" href="/">Continue Shopping</a>
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+          <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
         </div>
 
-        <div class="trust-box">
-          <p>Secure checkout powered by Stripe.</p>
-          <p>Order confirmation sent by email after purchase.</p>
-          <p>Tracking available once the order ships.</p>
-        </div>
-
-        <div class="reviews-section">
-          <h3>Customer Reviews</h3>
-          <p class="review-summary">★★★★★ ${product.rating}/5 average rating</p>
-          ${renderReviews(product)}
-        </div>
+        <a class="track-link" href="/">Back to Store</a>
       </div>
-    </div>
+    </section>
   `;
 }
 
-function renderRelatedProducts(currentProduct) {
+function renderRelatedProducts(product) {
+  const relatedContainer = document.getElementById("relatedProducts");
+
+  if (!relatedContainer) return;
+
   const related = products
-    .filter((product) => product.id !== currentProduct.id && product.category === currentProduct.category)
-    .slice(0, 3);
+    .filter((item) => item.id !== product.id && item.category === product.category)
+    .slice(0, 4);
 
-  const fallback = products
-    .filter((product) => product.id !== currentProduct.id)
-    .slice(0, 3);
+  relatedContainer.innerHTML = related
+    .map(
+      (item) => `
+      <div class="card">
+        <span class="badge">${item.category}</span>
+        <img src="${item.image}" alt="${item.name}">
+        <h2>${item.name}</h2>
+        <div class="rating">★★★★★</div>
+        <p>${getRating(item)}</p>
+        <p class="price">$${Number(item.price).toFixed(2)}</p>
+        <a class="track-link" href="/product.html?id=${item.id}">View Details</a>
+      </div>
+    `
+    )
+    .join("");
+}
 
-  const relatedProducts = related.length > 0 ? related : fallback;
+function saveCart() {
+  localStorage.setItem("koriCart", JSON.stringify(cart));
+}
 
-  document.getElementById("relatedProducts").innerHTML = relatedProducts.map((product) => `
-    <a class="related-card" href="/product.html?id=${product.id}">
-      <img src="${product.image}" alt="${product.name}">
-      <h3>${product.name}</h3>
-      <p>$${product.price.toFixed(2)}</p>
-    </a>
-  `).join("");
+function addToCart(productId) {
+  const product = products.find((item) => item.id === productId);
+  if (!product) return;
+
+  const existing = cart.find((item) => item.id === productId);
+
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({
+      ...product,
+      quantity: 1
+    });
+  }
+
+  saveCart();
+  alert("Added to cart!");
 }
 
 async function buyNow(productId) {
   const product = products.find((item) => item.id === productId);
+  if (!product) return;
 
-  if (!product) {
-    alert("Product not found.");
-    return;
-  }
+  const buyNowCart = [
+    {
+      ...product,
+      quantity: 1
+    }
+  ];
 
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      items: [
-        {
-          ...product,
-          quantity: 1
-        }
-      ]
-    })
-  });
+  try {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        items: buyNowCart
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("Checkout failed");
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Checkout failed. Please try again.");
+    }
+  } catch (error) {
+    console.error("Buy now error:", error);
+    alert("Checkout failed. Please try again.");
   }
 }
 
-loadProductPage().catch((error) => {
-  console.error("Product page failed:", error);
-
-  document.getElementById("productDetail").innerHTML = `
-    <h1>Product failed to load</h1>
-    <p>Something went wrong loading this product. Please go back to the store and try again.</p>
-    <a class="details-btn" href="/">Back to Store</a>
-  `;
-});
+loadProductPage();

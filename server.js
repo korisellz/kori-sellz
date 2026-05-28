@@ -272,6 +272,39 @@ const products = [
     image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
     description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
     shipping: "Estimated delivery: 8-23 business days after processing."
+  },
+  {
+    id: 27,
+    name: "360° 4-Channel FHD Dash Cam with Night Vision",
+    category: "Drones & Cameras",
+    sku: "CJCZ252615501AZ",
+    cost: 32.71,
+    price: 40.99,
+    image: "https://cf.cjdropshipping.com/e566bd39-39de-4352-a013-28632e200aa5.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60",
+    description: "Record every angle with this 360° 4-channel dash cam featuring 1080P front video, rear/left/right/interior coverage, IR night vision, loop recording, motion detection, and a free 32GB memory card. Great for everyday driving, rideshare drivers, and added vehicle security.",
+    shipping: "Estimated delivery: 8-23 business days after processing."
+  },
+  {
+    id: 28,
+    name: "4-Channel 360° Dash Cam with 128GB Memory Card",
+    category: "Drones & Cameras",
+    sku: "CJQC263293701AZ",
+    cost: 44.58,
+    price: 50.99,
+    image: "https://cf.cjdropshipping.com/215f13d6-b33e-4ed6-a568-6c0819be01cb.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60",
+    description: "Capture more of the road with this 4-channel 360° dash cam featuring 1080P front recording, left/right side coverage, rear view recording, night vision, G-sensor impact detection, parking monitor, loop recording, and a 128GB memory card. A great car safety upgrade for daily drivers, rideshare drivers, and road trips.",
+    shipping: "Estimated delivery: 8-23 business days after processing."
+  },
+  {
+    id: 29,
+    name: "Hainatech 360° 4-Channel Dash Cam with GPS & WiFi",
+    category: "Drones & Cameras",
+    sku: "CJHS232611301AZ",
+    cost: 87.12,
+    price: 99.99,
+    image: "https://cf.cjdropshipping.com/4d10e456-7000-4f65-8d00-1223081b6649.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_60,h_60",
+    description: "Upgrade your car security with this Hainatech 360° 4-channel dash cam featuring front, rear, inside, left, and right camera coverage. Includes built-in GPS, WiFi connection, night vision, 24/7 parking monitor, loop recording, and a free 128GB memory card. Great for rideshare drivers, road trips, and everyday peace of mind.",
+    shipping: "Estimated delivery: 8-23 business days after processing."
   }
 ];
 

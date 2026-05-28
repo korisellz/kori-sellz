@@ -152,7 +152,3 @@ async function buyNow(productId) {
 
 document.addEventListener("DOMContentLoaded", loadProductPage);
  
- <script src="/product-page.js?v=5"></script>
-  <script src="/footer.js"></script>
-</body>
-</html>

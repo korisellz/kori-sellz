@@ -42,8 +42,8 @@ const products = [
     name: "Type-C to HDMI VGA 5-in-1 Dual Display Converter",
     category: "Tech Accessories",
     sku: "CJXFJTDS00064-Black",
-    cost: 12.78,
-    price: 29.99,
+    cost: 19.56,
+    price: 24.99,
     image: "https://cf.cjdropshipping.com/203106/3190218982082.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
@@ -51,7 +51,7 @@ const products = [
     name: "4-in-1 Magnetic Wireless Charging Station",
     category: "Tech Accessories",
     sku: "CJYD179346901AZ",
-    cost: 12.37,
+    cost: 23.41,
     price: 29.99,
     image: "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_800,h_800/sharpen,100/format,jpg"
   },
@@ -61,7 +61,7 @@ const products = [
     category: "Drones & Cameras",
     sku: "CJWR241970801AZ",
     cost: 35.0,
-    price: 69.99,
+    price: 39.99,
     image: "https://cf.cjdropshipping.com/66ca3586-f363-4d10-b446-b93451e9f6a4.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
@@ -70,7 +70,7 @@ const products = [
     category: "Drones & Cameras",
     sku: "CJWR241970802BY",
     cost: 39.0,
-    price: 79.99,
+    price: 49.99,
     image: "https://cf.cjdropshipping.com/04df2447-39a4-4c05-8b0e-c2250546f1a1.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
@@ -78,7 +78,7 @@ const products = [
     name: "Wireless Lavalier Microphone for iPhone",
     category: "Creator Tools",
     sku: "CJMK1698386-2in1 for IOS",
-    cost: 10.98,
+    cost: 12.98,
     price: 24.99,
     image: "https://cf.cjdropshipping.com/adbc5add-bd51-4328-84c4-106e8c198890.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
@@ -87,17 +87,17 @@ const products = [
     name: "4K Waterproof Sport Camera",
     category: "Drones & Cameras",
     sku: "CJXFXJSM00002-Black",
-    cost: 8.69,
-    price: 15.99,
+    cost: 22.57,
+    price: 29.99,
     image: "https://cf.cjdropshipping.com/15287328/1102491960640.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
     id: 7,
     name: "1080P LED Mini High Definition Projector",
-    category: "Tech Accessories",
+    category: "Home Gadgets",
     sku: "CJCJSJYDSJ00002_SKU_HERE",
-    cost: 25.14,
-    price: 35.99,
+    cost: 7.26,
+    price: 10.99,
     image: "https://cf.cjdropshipping.com/20190617/604935516809.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
@@ -105,8 +105,8 @@ const products = [
     name: "Electronic Burglar Alarm Intelligent Home Security Door Stop Alarm",
     category: "Home Security",
     sku: "CJZN105466804DW",
-    cost: 6.0,
-    price: 19.99,
+    cost: 7.54,
+    price: 9.99,
     image: "https://cf.cjdropshipping.com/1616652882290.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
   {
@@ -114,7 +114,7 @@ const products = [
     name: "Electric Detangling Brush Scalp Massage Hair Brush",
     category: "Beauty",
     sku: "CJXFZNZN00544-Purple",
-    cost: 5.41,
+    cost: 12.66,
     price: 17.99,
     image: "https://oss-cf.cjdropshipping.com/product/2025/01/11/01/ed1175b4-bd77-4761-a4f1-c24037b17f2b.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
   },
@@ -123,9 +123,155 @@ const products = [
     name: "60W Fast Charging Multi-function Charging Cable Storage Box",
     category: "Tech Accessories",
     sku: "CJCD144565503CX",
-    cost: 0.74,
+    cost: 6.31,
     price: 9.99,
     image: "https://oss-cf.cjdropshipping.com/product/2025/04/17/10/538aa4eb-0082-41be-8cc2-90cf619f2b08.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 11,
+    name: "Car Vacuum Cleaner Powerful Mini - Car Dual-Purpose Power",
+    category: "Tech Accessories",
+    sku: "CJXC103967002BY",
+    cost: 25.82,
+    price: 29.99,
+    image: "https://cf.cjdropshipping.com/1615531072424.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 12,
+    name: "LED Sunset Projection Lamp",
+    category: "Home Gadgets",
+    sku: "CJTY115427723WD",
+    cost: 35.75,
+    price: 39.99,
+    image: "https://cf.cjdropshipping.com/4b5880f2-2caa-448a-9f07-1803e4ed8a7b.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 13,
+    name: "Bluetooth Sleep Headphones Eye Mask",
+    category: "Tech Accessories",
+    sku: "CJJT175857504DW",
+    cost: 22.16,
+    price: 24.99,
+    image: "https://cf.cjdropshipping.com/53a65dde-8d21-4a96-8d4c-e243dbd1ae3a.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 14,
+    name: "Mini Portable Blender Cup",
+    category: "Home Gadgets",
+    sku: "CJJJJTCF00622-blue",
+    cost: 30.97,
+    price: 34.99,
+    image: "https://cf.cjdropshipping.com/15584544/1173139706670.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 15,
+    name: "Rechargeable Electric Makeup Brush Cleaner",
+    category: "Beauty",
+    sku: "CJMJ223191302BY",
+    cost: 22.07,
+    price: 29.99,
+    image: "https://oss-cf.cjdropshipping.com/product/2024/12/04/01/ffa28e14-d497-492a-8606-deefc2397021_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 16,
+    name: "Magnetic Wireless Charging Mobile Phone Car Holder",
+    category: "Tech Accessories",
+    sku: "CJSJ121627701AZ",
+    cost: 15.42,
+    price: 19.99,
+    image: "https://cf.cjdropshipping.com/12a84093-bc7a-42fc-b308-d35c3e4c7e4e.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 17,
+    name: "Smart Motion Sensor LED Night Light",
+    category: "Home Security",
+    sku: "CJJT187400502BY",
+    cost: 7.83,
+    price: 9.99,
+    image: "https://oss-cf.cjdropshipping.com/product/2023/10/18/09/273fe5d1-fe54-468d-89be-500f7e4c04b5.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 18,
+    name: "Phone Tripod with Bluetooth Remote",
+    category: "Creator Tools",
+    sku: "CJYD227569301AZ",
+    cost: 25.86,
+    price: 29.99,
+    image: "https://oss-cf.cjdropshipping.com/product/2025/01/21/02/004c7170-5f19-4226-97f2-2b5eecc305b8_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 19,
+    name: "USB Rechargeable Neck Fan",
+    category: "Tech Accessories",
+    sku: "CJFU241984201AZ",
+    cost: 16.08,
+    price: 19.99,
+    image: "https://oss-cf.cjdropshipping.com/product/2025/07/04/01/81762b21-9c33-4dbd-bac7-540ba4061aa2.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 20,
+    name: "Mini WiFi Indoor Security Camera",
+    category: "Home Security",
+    sku: "CJJT27577190001",
+    cost: 15.96,
+    price: 19.99,
+    image: "https://cf.cjdropshipping.com/28c4098e-9248-4316-bfbe-0c1474525187.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 21,
+    name: "Rechargeable Heated Eyelash Curler",
+    category: "Beauty",
+    sku: "CJJJ265100603CX",
+    cost: 12.81,
+    price: 14.99,
+    image: "https://cf.cjdropshipping.com/4a15a241-cd39-4777-aeab-92e05739aed6.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 22,
+    name: "LED Makeup Mirror",
+    category: "Beauty",
+    sku: "CJJJJTJT02992-black",
+    cost: 13.31,
+    price: 24.99,
+    image: "https://cf.cjdropshipping.com/15641568/23132624195.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 23,
+    name: "Electric Facial Cleansing Brush",
+    category: "Beauty",
+    sku: "CJBJPFMB00672-Blue-Q1pc",
+    cost: 10.72,
+    price: 19.99,
+    image: "https://cf.cjdropshipping.com/20200321/1960128325958.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 24,
+    name: "6 PCS Wireless Home Security Alarm",
+    category: "Home Security",
+    sku: "CJJT253279301AZ",
+    cost: 8.36,
+    price: 12.99,
+    image: "https://cf.cjdropshipping.com/cfd297ab-a7ad-4817-9b1f-8ebaf38f7a4c.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 25,
+    name: "10 PCS Personal Alarm Safety Set",
+    category: "Home Security",
+    sku: "CJKY212180601AZ",
+    cost: 11.83,
+    price: 19.99,
+    image: "https://oss-cf.cjdropshipping.com/product/2024/08/28/01/1fcf48bf-a11d-456c-9407-345f89f507ee.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800"
+  },
+  {
+    id: 26,
+    name: "1080P Wireless WiFi Video Doorbell Camera",
+    category: "Home Security",
+    sku: "CJJD245497601AZ",
+    cost: 15.23,
+    price: 29.99,
+    image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
+    shipping: "Estimated delivery: 8-23 business days after processing."
   }
 ];
 

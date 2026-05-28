@@ -408,7 +408,19 @@ app.use(express.static("public"));
 
 function parseItemsFromSession(session) {
   try {
-    return JSON.parse(session.metadata?.items || "[]");
+    const savedItems = JSON.parse(session.metadata?.items || "[]");
+
+    return savedItems.map((savedItem) => {
+      const fullProduct = products.find((product) => {
+        return product.id === savedItem.id || product.sku === savedItem.sku;
+      });
+
+      return {
+        ...(fullProduct || {}),
+        ...savedItem,
+        quantity: savedItem.quantity || 1
+      };
+    });
   } catch {
     return [];
   }
@@ -721,9 +733,15 @@ app.post("/api/checkout", async (req, res) => {
 
       mode: "payment",
 
-      metadata: {
-        items: JSON.stringify(items)
-      },
+    metadata: {
+  items: JSON.stringify(
+    items.map((item) => ({
+      id: item.id,
+      sku: item.sku,
+      quantity: item.quantity || 1
+    }))
+  )
+},
 
       success_url: "https://korisellz.com/success",
       cancel_url: "https://korisellz.com/cancel"

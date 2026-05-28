@@ -481,21 +481,35 @@ app.get("/api/products", (req, res) => {
 app.post("/api/checkout", async (req, res) => {
   try {
     const items = req.body.items || [];
+const subtotal = items.reduce((sum, item) => {
+  return sum + Number(item.price) * (item.quantity || 1);
+}, 0);
 
-    if (!items.length) {
-      return res.status(400).json({
-        error: "Cart is empty"
-      });
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-
-      shipping_address_collection: {
-        allowed_countries: ["US"]
-      },
-
-      shipping_options: [
+const shippingOptions =
+  subtotal >= 50
+    ? [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 0,
+              currency: "usd"
+            },
+            display_name: "Free Standard Shipping",
+            delivery_estimate: {
+              minimum: {
+                unit: "business_day",
+                value: 8
+              },
+              maximum: {
+                unit: "business_day",
+                value: 23
+              }
+            }
+          }
+        }
+      ]
+    : [
         {
           shipping_rate_data: {
             type: "fixed_amount",
@@ -516,7 +530,21 @@ app.post("/api/checkout", async (req, res) => {
             }
           }
         }
-      ],
+      ];
+    if (!items.length) {
+      return res.status(400).json({
+        error: "Cart is empty"
+      });
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+
+      shipping_address_collection: {
+        allowed_countries: ["US"]
+      },
+
+    shipping_options: shippingOptions,
 
       phone_number_collection: {
         enabled: true

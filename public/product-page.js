@@ -1,154 +1,163 @@
-let products = [];
-let currentProduct = null;
+const params = new URLSearchParams(window.location.search);
+const productId = Number(params.get("id"));
 
-function getProductIdFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return Number(params.get("id"));
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const product = products.find((item) => item.id === productId);
+
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function getRating(product) {
-  return `${product.rating || 4.8} rating • ${product.reviews || product.id * 13 + 42} reviews`;
-}
+function updateCartCount() {
+  const cartCount = document.getElementById("cartCount");
+  if (!cartCount) return;
 
-function getShipping(product) {
-  return product.shipping || "Estimated delivery: 8-23 business days after processing.";
-}
-
-async function loadProductPage() {
-  const productId = getProductIdFromUrl();
-  const productContainer = document.getElementById("productDetails");
-  const relatedContainer = document.getElementById("relatedProducts");
-
-  if (!productContainer) {
-    console.error("Missing productDetails div in product.html");
-    return;
-  }
-
-  productContainer.innerHTML = "<p>Loading product...</p>";
-
-  try {
-    const productRes = await fetch(`/api/products/${productId}`);
-
-    if (!productRes.ok) {
-      throw new Error("Product not found");
-    }
-
-    currentProduct = await productRes.json();
-
-    const allProductsRes = await fetch("/api/products");
-    products = await allProductsRes.json();
-
-    productContainer.innerHTML = `
-      <section class="product-detail-card">
-        <div class="product-detail-image-wrap">
-          <span class="badge">${currentProduct.category}</span>
-          <img class="product-detail-image" src="${currentProduct.image}" alt="${currentProduct.name}">
-        </div>
-
-        <div class="product-detail-info">
-          <h1>${currentProduct.name}</h1>
-
-          <div class="rating">★★★★★</div>
-          <p>${getRating(currentProduct)}</p>
-
-          <p class="price">$${Number(currentProduct.price).toFixed(2)}</p>
-
-          <p class="product-description">
-            ${currentProduct.description || "This product was selected by Kori Sellz for everyday usefulness, style, and affordability."}
-          </p>
-
-          <div class="product-highlights">
-            <p><strong>Shipping:</strong> ${getShipping(currentProduct)}</p>
-            <p><strong>Checkout:</strong> Secure payment through Stripe.</p>
-            <p><strong>Support:</strong> Contact Kori Sellz anytime if you need help with your order.</p>
-          </div>
-
-          <div class="product-actions">
-            <button onclick="addToCart(${currentProduct.id})">Add to Cart</button>
-            <button class="buy-now" onclick="buyNow(${currentProduct.id})">Buy Now</button>
-          </div>
-
-          <a class="track-link" href="/">Back to Store</a>
-        </div>
-      </section>
-    `;
-
-    if (relatedContainer) {
-      const related = products
-        .filter((item) => item.id !== currentProduct.id && item.category === currentProduct.category)
-        .slice(0, 4);
-
-      relatedContainer.innerHTML = related.map((item) => `
-        <div class="card">
-          <span class="badge">${item.category}</span>
-          <img src="${item.image}" alt="${item.name}">
-          <h2>${item.name}</h2>
-          <div class="rating">★★★★★</div>
-          <p>${getRating(item)}</p>
-          <p class="price">$${Number(item.price).toFixed(2)}</p>
-          <a class="track-link" href="/product.html?id=${item.id}">View Details</a>
-        </div>
-      `).join("");
-    }
-  } catch (error) {
-    console.error("Product page load error:", error);
-
-    productContainer.innerHTML = `
-      <div class="tracking-box">
-        <h1>Product Loading Error</h1>
-        <p>Something went wrong loading this product.</p>
-        <p>${error.message}</p>
-        <a class="track-link" href="/">Back to Store</a>
-      </div>
-    `;
-  }
+  cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
 function addToCart(productId) {
-  const product = products.find((item) => item.id === productId) || currentProduct;
+  const item = products.find((p) => p.id === productId);
+  if (!item) return;
 
-  let cart = JSON.parse(localStorage.getItem("koriCart")) || [];
-  const existing = cart.find((item) => item.id === productId);
+  const existing = cart.find((cartItem) => cartItem.id === productId);
 
   if (existing) {
     existing.quantity += 1;
   } else {
-    cart.push({
-      ...product,
-      quantity: 1
-    });
+    cart.push({ ...item, quantity: 1 });
   }
 
-  localStorage.setItem("koriCart", JSON.stringify(cart));
+  saveCart();
+  updateCartCount();
   alert("Added to cart!");
 }
 
-async function buyNow(productId) {
-  const product = products.find((item) => item.id === productId) || currentProduct;
+function buyNow(productId) {
+  const item = products.find((p) => p.id === productId);
+  if (!item) return;
 
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      items: [
-        {
-          ...product,
-          quantity: 1
-        }
-      ]
-    })
-  });
+  cart = [{ ...item, quantity: 1 }];
+  saveCart();
 
-  const data = await res.json();
+  checkout();
+}
 
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("Checkout failed");
+async function checkout() {
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ items: cart })
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Checkout failed.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Checkout failed.");
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadProductPage);
- 
+function getRelatedProducts(currentProduct) {
+  return products
+    .filter((item) => item.category === currentProduct.category && item.id !== currentProduct.id)
+    .slice(0, 4);
+}
+
+function renderProductPage() {
+  const productPage = document.getElementById("productPage");
+
+  if (!productPage) return;
+
+  if (!product) {
+    productPage.innerHTML = `
+      <section class="product-detail-card">
+        <h1>Product not found</h1>
+        <p>This product could not be found.</p>
+        <a class="track-link" href="/">Return to Store</a>
+      </section>
+    `;
+    return;
+  }
+
+  const relatedProducts = getRelatedProducts(product);
+
+  productPage.innerHTML = `
+    <section class="product-detail-card">
+      <div class="product-detail-grid">
+        <div class="product-detail-image-wrap">
+          <img class="product-detail-image" src="${product.image}" alt="${product.name}">
+        </div>
+
+        <div class="product-detail-info">
+          <span class="badge">${product.category}</span>
+          <h1>${product.name}</h1>
+
+          <div class="rating">★★★★★</div>
+          <p class="review-text">4.8 rating • Customer favorite</p>
+
+          <p class="product-detail-price">$${product.price.toFixed(2)}</p>
+
+          <p class="product-description">${product.description || "A trending Kori Sellz product made for everyday use."}</p>
+
+          <div class="product-info-box">
+            <h3>Shipping Estimate</h3>
+            <p>${product.shipping || "Estimated delivery: 8-23 business days after processing."}</p>
+          </div>
+
+          <div class="product-info-box">
+            <h3>What’s in the Box</h3>
+            <ul>
+              ${(product.whatsInBox || ["1 product unit", "Basic packaging"]).map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+
+          <div class="product-info-box">
+            <h3>Product Details</h3>
+            <p><strong>SKU:</strong> ${product.sku}</p>
+            <p><strong>Category:</strong> ${product.category}</p>
+          </div>
+
+          <div class="product-actions">
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
+            <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="related-section">
+      <h2>Related Products</h2>
+      <div class="related-products">
+        ${
+          relatedProducts.length
+            ? relatedProducts.map((item) => `
+              <div class="related-card">
+                <img src="${item.image}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>$${item.price.toFixed(2)}</p>
+                <a href="/product.html?id=${item.id}">View Details</a>
+              </div>
+            `).join("")
+            : "<p>No related products found.</p>"
+        }
+      </div>
+    </section>
+  `;
+}
+
+renderProductPage();
+updateCartCount();

@@ -356,6 +356,48 @@ const products = [
     shipping: "Estimated delivery: 8-23 business days after processing."
   }
 ];
+const whatsInBoxByCategory = {
+  "Tech Accessories": [
+    "1 product unit",
+    "Charging or connection accessories if included by supplier",
+    "Basic packaging"
+  ],
+  "Drones & Cameras": [
+    "1 camera or drone device",
+    "Included accessories shown in product photos",
+    "Charging cable or power cable if included by supplier",
+    "User setup items if provided by supplier"
+  ],
+  "Beauty": [
+    "1 beauty device or tool",
+    "Charging cable if rechargeable",
+    "Basic packaging"
+  ],
+  "Home Security": [
+    "1 security device or kit",
+    "Mounting or setup accessories if included by supplier",
+    "Basic packaging"
+  ],
+  "Creator Tools": [
+    "1 creator accessory",
+    "Connection or charging accessories if included",
+    "Basic packaging"
+  ],
+  "Home Gadgets": [
+    "1 home gadget",
+    "Power or charging accessory if included",
+    "Basic packaging"
+  ]
+};
+
+products.forEach((product) => {
+  if (!product.whatsInBox) {
+    product.whatsInBox = whatsInBoxByCategory[product.category] || [
+      "1 product unit",
+      "Basic packaging"
+    ];
+  }
+});
 async function setupDatabase() {
   if (!pool) {
     console.log("No DATABASE_URL found. Database disabled.");

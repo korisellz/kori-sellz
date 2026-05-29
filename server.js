@@ -517,6 +517,7 @@ return (
   response.data?.data?.orderNumber ||
   null
 );
+
 async function sendConfirmationEmail({ session, items, cjOrderId }) {
   if (!resend) {
     console.log("Resend not configured. Skipping email.");

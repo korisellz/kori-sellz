@@ -339,7 +339,7 @@ const products = [
 
 
   // Add products 11-28 here if they are not already in this list.
-];
+
 
 async function initDatabase() {
   if (!pool) {

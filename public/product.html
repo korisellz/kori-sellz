@@ -1,32 +1,43 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-  <title>Kori Sellz Product</title>
+  <title>Product Details | Kori Sellz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/jpeg" href="/kori-logo.jpeg">
 </head>
+
 <body>
+  <div class="announcement-bar">
+    ✨ Secure checkout with Stripe • $5.50 standard shipping • Free shipping over $50 • Delivery 8-23 business days after processing ✨
+  </div>
+
   <header class="hero small-hero">
-    <a class="logo brand-logo" href="/"><img src="/kori-logo.jpeg" alt="Kori Sellz logo"></a>
-    <p>Trending tech. Luxury vibes. Everyday prices.</p>
+    <a class="logo brand-logo" href="/">
+      <img src="/kori-logo.jpeg" alt="Kori Sellz logo">
+    </a>
+
+    <p>Product Details</p>
+
     <a class="track-link" href="/">Back to Store</a>
-    <a class="track-link" href="track.html">Track Order</a>
+    <a class="track-link" href="/track.html">Track Order</a>
+    <a class="track-link" href="/faq.html">FAQ</a>
   </header>
 
-  <main class="product-detail-page">
-    <section id="productDetails" class="product-detail-card">
-      <p>Loading product...</p>
-    </section>
-
-    <section class="related-section">
-      <h2>Related Products</h2>
-      <div id="relatedProducts" class="related-grid"></div>
+  <main id="productPage">
+    <section class="product-detail-card">
+      <h1>Loading product...</h1>
+      <p>Please wait while the product details load.</p>
     </section>
   </main>
 
-<script src="/product-page.js?v=6"></script>
-<script src="/footer.js"></script>
+  <button class="cart-float" onclick="window.location.href='/'">
+    <span class="cart-icon">&#128722;</span>
+  </button>
+
+  <script src="/product.js?v=4"></script>
+  <script src="/product-page.js?v=4"></script>
+  <script src="/footer.js"></script>
 </body>
 </html>
-
 

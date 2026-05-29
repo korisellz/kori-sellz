@@ -417,15 +417,14 @@ async function getCJAccessToken() {
     return process.env.CJ_ACCESS_TOKEN;
   }
 
-  if (!process.env.CJ_EMAIL || !process.env.CJ_API_KEY) {
-    throw new Error("Missing CJ_ACCESS_TOKEN or CJ_EMAIL/CJ_API_KEY");
+  if (!process.env.CJ_API_KEY) {
+    throw new Error("Missing CJ_API_KEY");
   }
 
   const response = await axios.post(
-    "https://developers.cjdropshipping.cn/api2.0/v1/authentication/getAccessToken",
+    "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
     {
-      email: process.env.CJ_EMAIL,
-      password: process.env.CJ_API_KEY
+      apiKey: process.env.CJ_API_KEY
     },
     {
       headers: {
@@ -434,19 +433,27 @@ async function getCJAccessToken() {
     }
   );
 
-  const data = response.data?.data;
+  console.log("CJ auth response:", {
+    code: response.data?.code,
+    result: response.data?.result,
+    message: response.data?.message,
+    dataKeys: response.data?.data ? Object.keys(response.data.data) : null
+  });
 
   const token =
-    data?.accessToken ||
-    data?.access_token ||
-    data?.token ||
-    data?.access_token_value;
+    response.data?.data?.accessToken ||
+    response.data?.data?.access_token ||
+    response.data?.accessToken ||
+    response.data?.access_token;
 
   if (!token) {
-    console.log("CJ auth response:", response.data);
-    throw new Error("CJ access token was not returned");
+    throw new Error(
+      "CJ access token was not returned. CJ said: " +
+        (response.data?.message || JSON.stringify(response.data))
+    );
   }
 
+  console.log("CJ access token generated");
   return token;
 }
 

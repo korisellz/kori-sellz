@@ -466,29 +466,28 @@ async function sendOrderToCJ({ session, items }) {
 
   const orderNumber = makeOrderNumber(session.id);
 
-  const cjPayload = {
-    orderNumber,
-    shippingZip: address.postal_code || "",
-    shippingCountry: "United States",
-    shippingCountryCode: address.country || "US",
-    shippingProvince: address.state || "",
-    shippingCity: address.city || "",
-    shippingCounty: "",
-    shippingPhone: customer.phone || "",
-    shippingCustomerName: shipping.name || customer.name || "Customer",
-    shippingAddress: address.line1 || "",
-    shippingAddress2: address.line2 || "",
-    email: customer.email || "",
-    remark: "Kori Sellz order from Stripe",
-    logisticName: "CJPacket Ordinary",
-    fromCountryCode: "CN",
-    products: items.map((item, index) => ({
-      sku: item.sku,
-      quantity: item.quantity || 1,
-      unitPrice: item.cost || item.price,
-      storeLineItemId: `${orderNumber}-${index + 1}`
-    }))
-  };
+ const cjPayload = {
+  orderNumber,
+  shippingZip: address.postal_code || "",
+  shippingCountry: "United States",
+  shippingCountryCode: address.country || "US",
+  shippingProvince: address.state || "",
+  shippingCity: address.city || "",
+  shippingCounty: "",
+  shippingPhone: customer.phone || "",
+  shippingCustomerName: shipping.name || customer.name || "Customer",
+  shippingAddress: address.line1 || "",
+  shippingAddress2: address.line2 || "",
+  email: customer.email || "",
+  remark: "Kori Sellz order from Stripe",
+  fromCountryCode: "CN",
+  products: items.map((item, index) => ({
+    sku: item.sku,
+    quantity: item.quantity || 1,
+    unitPrice: item.cost || item.price,
+    storeLineItemId: `${orderNumber}-${index + 1}`
+  }))
+};
 
   console.log("CJ payload being sent:", JSON.stringify(cjPayload, null, 2));
 

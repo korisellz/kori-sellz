@@ -986,6 +986,71 @@ app.get("/sitemap.xml", (req, res) => {
 
   res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://korisellz.com/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/product.html?id=16</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/product.html?id=6</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/product.html?id=24</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/product.html?id=20</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/product.html?id=15</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/product.html?id=5</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/faq.html</loc>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/privacy.html</loc>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/terms.html</loc>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/shipping.html</loc>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://korisellz.com/contact.html</loc>
+    <priority>0.6</priority>
+  </url>
+</urlset>`);
+});
+  res.type("application/xml");
+
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE_URL}/</loc></url>
   <url><loc>${SITE_URL}/track.html</loc></url>
   <url><loc>${SITE_URL}/faq.html</loc></url>

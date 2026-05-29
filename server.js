@@ -9,13 +9,13 @@ import pg from "pg";
 dotenv.config();
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-
 const { Pool } = pg;
 
 const PORT = process.env.PORT || 7000;
 const SITE_URL = process.env.SITE_URL || "https://korisellz.com";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 let pool = null;
 
@@ -43,7 +43,9 @@ const products = [
     sku: "CJXFJTDS00064-Black",
     cost: 12.78,
     price: 29.99,
-    image: "https://cf.cjdropshipping.com/203106/3190218982082.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/203106/3190218982082.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A convenient multi-port display converter for connecting Type-C devices to HDMI and VGA screens.",
+    whatsInTheBox: ["1 Type-C converter adapter"]
   },
   {
     id: 2,
@@ -52,7 +54,9 @@ const products = [
     sku: "CJYD179346901AZ",
     cost: 12.37,
     price: 29.99,
-    image: "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/quick/product/6da64e9b-f353-419a-9be1-13f716dfd91b.jpg?x-oss-process=image/resize,m_pad,w_800,h_800",
+    description: "A sleek charging station for powering multiple devices in one place.",
+    whatsInTheBox: ["1 Wireless charging station", "1 Charging cable"]
   },
   {
     id: 3,
@@ -61,7 +65,9 @@ const products = [
     sku: "CJWR241970801AZ",
     cost: 35,
     price: 69.99,
-    image: "https://cf.cjdropshipping.com/66ca3586-f363-4d10-b446-b93451e9f6a4.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/66ca3586-f363-4d10-b446-b93451e9f6a4.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A professional-style drone with dual cameras and two batteries for longer flying fun.",
+    whatsInTheBox: ["1 Drone", "1 Remote control", "2 Batteries", "Charging accessories"]
   },
   {
     id: 4,
@@ -70,7 +76,9 @@ const products = [
     sku: "CJWR241970802BY",
     cost: 39,
     price: 79.99,
-    image: "https://cf.cjdropshipping.com/04df2447-39a4-4c05-8b0e-c2250546f1a1.png?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/04df2447-39a4-4c05-8b0e-c2250546f1a1.png?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A dual-camera drone bundle with three batteries for extra flight time.",
+    whatsInTheBox: ["1 Drone", "1 Remote control", "3 Batteries", "Charging accessories"]
   },
   {
     id: 5,
@@ -79,7 +87,9 @@ const products = [
     sku: "CJMK1698386-2in1 for IOS",
     cost: 10.98,
     price: 24.99,
-    image: "https://cf.cjdropshipping.com/adbc5add-bd51-4328-84c4-106e8c198890.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/adbc5add-bd51-4328-84c4-106e8c198890.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A wireless microphone for creators, interviews, videos, and livestreams.",
+    whatsInTheBox: ["Wireless microphone set", "Charging case or cable"]
   },
   {
     id: 6,
@@ -88,7 +98,9 @@ const products = [
     sku: "CJXFXJSM00002-Black",
     cost: 8.69,
     price: 15.99,
-    image: "https://cf.cjdropshipping.com/15287328/1102491960640.png?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/15287328/1102491960640.png?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A compact sport camera for capturing outdoor moments, travel, and action shots.",
+    whatsInTheBox: ["1 Sport camera", "Basic mounting accessories"]
   },
   {
     id: 7,
@@ -97,7 +109,9 @@ const products = [
     sku: "CJCJSJYDSJ00002_SKU_HERE",
     cost: 25.14,
     price: 35.99,
-    image: "https://cf.cjdropshipping.com/20190617/604935516809.png?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/20190617/604935516809.png?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A mini projector for movies, gaming, and cozy room setups.",
+    whatsInTheBox: ["1 Mini projector", "1 Power cable"]
   },
   {
     id: 8,
@@ -106,7 +120,9 @@ const products = [
     sku: "CJZN105466804DW",
     cost: 6,
     price: 19.99,
-    image: "https://cf.cjdropshipping.com/1616652882290.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://cf.cjdropshipping.com/1616652882290.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A door-stop alarm designed to help alert you when a door is opened or pushed.",
+    whatsInTheBox: ["1 Door stop alarm"]
   },
   {
     id: 9,
@@ -115,7 +131,9 @@ const products = [
     sku: "CJXFZNZN00544-Purple",
     cost: 5.41,
     price: 17.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2025/01/11/01/ed1175b4-bd77-4761-a4f1-c24037b17f2b.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://oss-cf.cjdropshipping.com/product/2025/01/11/01/ed1175b4-bd77-4761-a4f1-c24037b17f2b.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "An electric detangling brush designed to help smooth hair and massage the scalp.",
+    whatsInTheBox: ["1 Electric hair brush"]
   },
   {
     id: 10,
@@ -124,7 +142,9 @@ const products = [
     sku: "CJCD144565503CX",
     cost: 0.74,
     price: 9.99,
-    image: "https://oss-cf.cjdropshipping.com/product/2025/04/17/10/538aa4eb-0082-41be-8cc2-90cf619f2b08.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800"
+    image: "https://oss-cf.cjdropshipping.com/product/2025/04/17/10/538aa4eb-0082-41be-8cc2-90cf619f2b08.jpg?x-oss-process=image/resize,m_fill,m_pad,w_800,h_800",
+    description: "A compact charging cable storage box with multi-function charging convenience.",
+    whatsInTheBox: ["1 Cable storage box"]
   },
   {
     id: 11,
@@ -135,7 +155,7 @@ const products = [
     price: 29.99,
     image: "https://cf.cjdropshipping.com/1615531072424.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
     description: "A portable mini car vacuum cleaner for quick cleanups, car interiors, small messes, and everyday convenience.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    whatsInTheBox: ["1 Car vacuum cleaner", "Basic nozzle accessories"]
   },
   {
     id: 12,
@@ -145,8 +165,8 @@ const products = [
     cost: 35.75,
     price: 39.99,
     image: "https://cf.cjdropshipping.com/4b5880f2-2caa-448a-9f07-1803e4ed8a7b.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Create a cozy aesthetic vibe with this LED sunset projection lamp, perfect for photos, bedrooms, videos, and relaxing spaces.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "Create a cozy aesthetic vibe with this LED sunset projection lamp.",
+    whatsInTheBox: ["1 Sunset projection lamp", "1 Power cable"]
   },
   {
     id: 13,
@@ -156,8 +176,8 @@ const products = [
     cost: 22.16,
     price: 24.99,
     image: "https://cf.cjdropshipping.com/53a65dde-8d21-4a96-8d4c-e243dbd1ae3a.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A soft Bluetooth sleep mask with built-in headphones, great for relaxing, travel, meditation, and sleeping with music or white noise.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A soft Bluetooth sleep mask with built-in headphones for travel, relaxation, and sleep.",
+    whatsInTheBox: ["1 Bluetooth sleep mask", "1 Charging cable"]
   },
   {
     id: 14,
@@ -167,8 +187,8 @@ const products = [
     cost: 30.97,
     price: 34.99,
     image: "https://cf.cjdropshipping.com/15584544/1173139706670.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A portable blender cup designed for smoothies, shakes, fruit drinks, and quick blends on the go.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A portable blender cup for smoothies, shakes, fruit drinks, and quick blends on the go.",
+    whatsInTheBox: ["1 Portable blender cup", "1 Charging cable"]
   },
   {
     id: 15,
@@ -178,8 +198,8 @@ const products = [
     cost: 22.07,
     price: 29.99,
     image: "https://oss-cf.cjdropshipping.com/product/2024/12/04/01/ffa28e14-d497-492a-8606-deefc2397021_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A rechargeable makeup brush cleaner designed to make cleaning beauty tools faster, easier, and more convenient.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A rechargeable makeup brush cleaner designed to make cleaning beauty tools faster and easier.",
+    whatsInTheBox: ["1 Makeup brush cleaner", "1 Charging cable"]
   },
   {
     id: 16,
@@ -189,8 +209,8 @@ const products = [
     cost: 15.42,
     price: 19.99,
     image: "https://cf.cjdropshipping.com/12a84093-bc7a-42fc-b308-d35c3e4c7e4e.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A magnetic phone holder with wireless charging support, perfect for hands-free driving and keeping your phone powered on the road.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A magnetic phone holder with wireless charging support for hands-free driving.",
+    whatsInTheBox: ["1 Phone car holder", "1 Charging cable"]
   },
   {
     id: 17,
@@ -200,8 +220,8 @@ const products = [
     cost: 7.83,
     price: 9.99,
     image: "https://oss-cf.cjdropshipping.com/product/2023/10/18/09/273fe5d1-fe54-468d-89be-500f7e4c04b5.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A motion sensor LED night light for hallways, bedrooms, bathrooms, closets, and added visibility around your home.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A motion sensor LED night light for hallways, bedrooms, bathrooms, closets, and added visibility.",
+    whatsInTheBox: ["1 Motion sensor night light"]
   },
   {
     id: 18,
@@ -211,8 +231,8 @@ const products = [
     cost: 25.86,
     price: 29.99,
     image: "https://oss-cf.cjdropshipping.com/product/2025/01/21/02/004c7170-5f19-4226-97f2-2b5eecc305b8_trans.jpeg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A phone tripod with Bluetooth remote for selfies, content creation, livestreaming, recording, and hands-free photos.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A phone tripod with Bluetooth remote for selfies, content creation, recording, and hands-free photos.",
+    whatsInTheBox: ["1 Phone tripod", "1 Bluetooth remote"]
   },
   {
     id: 19,
@@ -222,8 +242,8 @@ const products = [
     cost: 16.08,
     price: 19.99,
     image: "https://oss-cf.cjdropshipping.com/product/2025/07/04/01/81762b21-9c33-4dbd-bac7-540ba4061aa2.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A USB rechargeable neck fan designed for hands-free cooling during travel, work, outdoor activities, and hot days.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A USB rechargeable neck fan for hands-free cooling during travel, work, and hot days.",
+    whatsInTheBox: ["1 Rechargeable neck fan", "1 Charging cable"]
   },
   {
     id: 20,
@@ -233,8 +253,8 @@ const products = [
     cost: 15.96,
     price: 19.99,
     image: "https://cf.cjdropshipping.com/28c4098e-9248-4316-bfbe-0c1474525187.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A compact WiFi indoor security camera for checking on rooms, pets, small spaces, and everyday home monitoring.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A compact WiFi indoor security camera for checking on rooms, pets, and small spaces.",
+    whatsInTheBox: ["1 Mini WiFi camera", "1 Charging cable"]
   },
   {
     id: 21,
@@ -244,8 +264,8 @@ const products = [
     cost: 12.81,
     price: 14.99,
     image: "https://cf.cjdropshipping.com/4a15a241-cd39-4777-aeab-92e05739aed6.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A rechargeable heated eyelash curler designed to help lift and style lashes quickly for everyday beauty routines.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A rechargeable heated eyelash curler designed to help lift and style lashes quickly.",
+    whatsInTheBox: ["1 Heated eyelash curler", "1 Charging cable"]
   },
   {
     id: 22,
@@ -255,8 +275,8 @@ const products = [
     cost: 13.31,
     price: 24.99,
     image: "https://cf.cjdropshipping.com/15641568/23132624195.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A bright LED makeup mirror designed for beauty routines, skincare, travel, and better lighting while getting ready.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A bright LED makeup mirror for beauty routines, skincare, travel, and better lighting.",
+    whatsInTheBox: ["1 LED makeup mirror"]
   },
   {
     id: 23,
@@ -266,8 +286,8 @@ const products = [
     cost: 10.72,
     price: 19.99,
     image: "https://cf.cjdropshipping.com/20200321/1960128325958.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "An electric facial cleansing brush designed to support daily skincare routines and help cleanse more effectively.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "An electric facial cleansing brush designed to support daily skincare routines.",
+    whatsInTheBox: ["1 Facial cleansing brush"]
   },
   {
     id: 24,
@@ -278,7 +298,7 @@ const products = [
     price: 12.99,
     image: "https://cf.cjdropshipping.com/cfd297ab-a7ad-4817-9b1f-8ebaf38f7a4c.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
     description: "A 6-piece wireless home security alarm set for doors, windows, apartments, dorms, and small spaces.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    whatsInTheBox: ["6 Wireless alarm pieces"]
   },
   {
     id: 25,
@@ -288,8 +308,8 @@ const products = [
     cost: 11.83,
     price: 19.99,
     image: "https://oss-cf.cjdropshipping.com/product/2024/08/28/01/1fcf48bf-a11d-456c-9407-345f89f507ee.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A portable personal safety alarm set that can be carried on keys, bags, or backpacks for extra peace of mind.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A portable personal safety alarm set that can be carried on keys, bags, or backpacks.",
+    whatsInTheBox: ["10 Personal safety alarms"]
   },
   {
     id: 26,
@@ -299,8 +319,8 @@ const products = [
     cost: 15.23,
     price: 29.99,
     image: "https://cf.cjdropshipping.com/8083315b-22af-4500-9357-84195d8d7b51.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts. Great for apartments, homes, and small businesses.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A budget-friendly wireless video doorbell camera with 1080P video, motion detection, night vision, two-way audio, and mobile app alerts.",
+    whatsInTheBox: ["1 Wireless doorbell camera", "Mounting accessories"]
   },
   {
     id: 27,
@@ -310,8 +330,8 @@ const products = [
     cost: 0,
     price: 49.99,
     image: "https://cf.cjdropshipping.com/a451d26b-9b2c-48aa-8dfb-6949d55d12fb.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Get full driving coverage with this 360° 4-channel dash cam. It records the front, rear, left, right, and inside views to help protect your vehicle on the road or while parked. Features IR night vision, loop recording, motion detection, and includes a free 32GB memory card.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A wired 360° 4-channel dash cam with front, rear, side, and inside coverage.",
+    whatsInTheBox: ["1 Dash cam", "1 32GB memory card", "Wiring/power accessories"]
   },
   {
     id: 28,
@@ -321,8 +341,8 @@ const products = [
     cost: 44.58,
     price: 50.99,
     image: "https://cf.cjdropshipping.com/a451d26b-9b2c-48aa-8dfb-6949d55d12fb.jpg?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Drive with extra peace of mind using this 4-channel 360° dash cam. It features 1080P front recording, left and right side coverage, rear recording, night vision, G-sensor impact detection, parking monitor, loop recording, and a 128GB memory card for extended storage.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A wired 4-channel 360° dash cam with 1080P front recording, side coverage, rear recording, night vision, parking monitor, loop recording, and 128GB memory card.",
+    whatsInTheBox: ["1 Dash cam", "1 128GB memory card", "Wiring/power accessories"]
   },
   {
     id: 29,
@@ -332,14 +352,10 @@ const products = [
     cost: 87.12,
     price: 99.99,
     image: "https://cf.cjdropshipping.com/61f1303c-ee57-4ddb-8b3a-14cac921e848.png?x-oss-process=image/format,webp,image/resize,m_fill,m_pad,w_800,h_800",
-    description: "Upgrade your car security with this Hainatech 360° 4-channel dash cam. It records front, rear, inside, left, and right views and includes built-in GPS, WiFi, night vision, 24/7 parking monitoring, loop recording, and a free 128GB memory card. Perfect for daily drivers, rideshare drivers, and road trips.",
-    shipping: "Estimated delivery: 8-23 business days after processing."
+    description: "A wired 360° 4-channel dash cam with built-in GPS, WiFi, night vision, parking monitoring, loop recording, and 128GB memory card.",
+    whatsInTheBox: ["1 Hainatech dash cam", "1 128GB memory card", "Wiring/power accessories"]
   }
 ];
-
-
-  // Add products 11-28 here if they are not already in this list.
-
 
 async function initDatabase() {
   if (!pool) {
@@ -370,22 +386,9 @@ async function initDatabase() {
       );
     `);
 
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS stripe_session_id TEXT UNIQUE;`);
     await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_number TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_name TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_email TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_address TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_city TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_state TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_zip TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_country TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS items JSONB;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS livemode BOOLEAN;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS status TEXT;`);
     await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS cj_order_id TEXT;`);
     await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS error TEXT;`);
-    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();`);
 
     console.log("Database ready");
   } catch (error) {
@@ -463,31 +466,31 @@ async function sendOrderToCJ({ session, items }) {
   const shipping = session.collected_information?.shipping_details || session.shipping_details || {};
   const address = shipping.address || {};
   const customer = session.customer_details || {};
-
   const orderNumber = makeOrderNumber(session.id);
 
- const cjPayload = {
-  orderNumber,
-  shippingZip: address.postal_code || "",
-  shippingCountry: "United States",
-  shippingCountryCode: address.country || "US",
-  shippingProvince: address.state || "",
-  shippingCity: address.city || "",
-  shippingCounty: "",
-  shippingPhone: customer.phone || "",
-  shippingCustomerName: shipping.name || customer.name || "Customer",
-  shippingAddress: address.line1 || "",
-  shippingAddress2: address.line2 || "",
-  email: customer.email || "",
-  remark: "Kori Sellz order from Stripe",
-  fromCountryCode: "CN",
-  products: items.map((item, index) => ({
-    sku: item.sku,
-    quantity: item.quantity || 1,
-    unitPrice: item.cost || item.price,
-    storeLineItemId: `${orderNumber}-${index + 1}`
-  }))
-};
+  const cjPayload = {
+    orderNumber,
+    shippingZip: address.postal_code || "",
+    shippingCountry: "United States",
+    shippingCountryCode: address.country || "US",
+    shippingProvince: address.state || "",
+    shippingCity: address.city || "",
+    shippingCounty: "",
+    shippingPhone: customer.phone || "",
+    shippingCustomerName: shipping.name || customer.name || "Customer",
+    shippingAddress: address.line1 || "",
+    shippingAddress2: address.line2 || "",
+    email: customer.email || "",
+    remark: "Kori Sellz order from Stripe",
+    logisticName: "CJPacket Ordinary",
+    fromCountryCode: "CN",
+    products: items.map((item, index) => ({
+      sku: item.sku,
+      quantity: item.quantity || 1,
+      unitPrice: item.cost || item.price,
+      storeLineItemId: `${orderNumber}-${index + 1}`
+    }))
+  };
 
   console.log("CJ payload being sent:", JSON.stringify(cjPayload, null, 2));
 
@@ -534,17 +537,11 @@ async function sendConfirmationEmail({ session, items, cjOrderId }) {
   const orderNumber = makeOrderNumber(session.id);
 
   const itemRows = items
-    .map(
-      (item) => `
-        <li>
-          ${item.name} — Qty: ${item.quantity || 1}
-        </li>
-      `
-    )
+    .map((item) => `<li>${item.name} — Qty: ${item.quantity || 1}</li>`)
     .join("");
 
   const emailResponse = await resend.emails.send({
-    from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
+    from: process.env.EMAIL_FROM || "Kori Sellz <support@korisellz.com>",
     to: customerEmail,
     subject: `Kori Sellz Order Confirmation ${orderNumber}`,
     html: `
@@ -555,8 +552,7 @@ async function sendConfirmationEmail({ session, items, cjOrderId }) {
       <h3>Items:</h3>
       <ul>${itemRows}</ul>
       <p>Shipping may take 8-23 business days after processing.</p>
-      <p>You can track your order here:</p>
-      <p><a href="${SITE_URL}/track.html">${SITE_URL}/track.html</a></p>
+      <p><a href="${SITE_URL}/track.html">Track your order</a></p>
       <p>Thank you for shopping with Kori Sellz.</p>
     `
   });
@@ -647,11 +643,9 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
     let items = [];
 
     try {
-      const metadataItems = session.metadata?.items || "[]";
-      items = getFullItems(JSON.parse(metadataItems));
+      items = getFullItems(JSON.parse(session.metadata?.items || "[]"));
     } catch (error) {
       console.error("Item parse error:", error.message);
-      items = [];
     }
 
     let cjOrderId = null;
@@ -660,7 +654,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
     try {
       if (session.livemode === true) {
         cjOrderId = await sendOrderToCJ({ session, items });
-        console.log("CJ Order ID:", cjOrderId || "No CJ order ID found");
+        console.log("CJ Order ID:", cjOrderId || "N/A");
       } else {
         console.log("Stripe test payment detected — skipping real CJ order creation.");
         console.log("Test order items:", items);
@@ -696,6 +690,16 @@ app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
+app.get("/api/products/:id", (req, res) => {
+  const product = products.find((p) => String(p.id) === String(req.params.id));
+
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  res.json(product);
+});
+
 app.post("/api/checkout", async (req, res) => {
   try {
     const rawItems = req.body.items || [];
@@ -722,14 +726,8 @@ app.post("/api/checkout", async (req, res) => {
                 },
                 display_name: "Free Shipping",
                 delivery_estimate: {
-                  minimum: {
-                    unit: "business_day",
-                    value: 8
-                  },
-                  maximum: {
-                    unit: "business_day",
-                    value: 23
-                  }
+                  minimum: { unit: "business_day", value: 8 },
+                  maximum: { unit: "business_day", value: 23 }
                 }
               }
             }
@@ -744,14 +742,8 @@ app.post("/api/checkout", async (req, res) => {
                 },
                 display_name: "Standard Shipping",
                 delivery_estimate: {
-                  minimum: {
-                    unit: "business_day",
-                    value: 8
-                  },
-                  maximum: {
-                    unit: "business_day",
-                    value: 23
-                  }
+                  minimum: { unit: "business_day", value: 8 },
+                  maximum: { unit: "business_day", value: 23 }
                 }
               }
             }
@@ -955,8 +947,8 @@ app.post("/api/contact", async (req, res) => {
     const { name, email, message } = req.body;
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
-      to: process.env.SUPPORT_INBOX || "support@korisellz.com",
+      from: process.env.EMAIL_FROM || "Kori Sellz <support@korisellz.com>",
+      to: process.env.SUPPORT_INBOX || "korisellz@gmail.com",
       subject: `New Kori Sellz Contact Form Message from ${name}`,
       html: `
         <h2>New Contact Form Message</h2>
@@ -981,44 +973,38 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(`User-agent: *
+Allow: /
+
+Sitemap: https://korisellz.com/sitemap.xml`);
+});
+
 app.get("/sitemap.xml", (req, res) => {
   res.type("application/xml");
 
+  const productUrls = products
+    .map(
+      (product) => `
+  <url>
+    <loc>https://korisellz.com/product.html?id=${product.id}</loc>
+    <priority>0.7</priority>
+  </url>`
+    )
+    .join("");
+
   res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
     <loc>https://korisellz.com/</loc>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://korisellz.com/product.html?id=16</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://korisellz.com/product.html?id=6</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://korisellz.com/product.html?id=24</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://korisellz.com/product.html?id=20</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://korisellz.com/product.html?id=15</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://korisellz.com/product.html?id=5</loc>
-    <priority>0.8</priority>
+    <loc>https://korisellz.com/track.html</loc>
+    <priority>0.6</priority>
   </url>
 
   <url>
@@ -1045,17 +1031,9 @@ app.get("/sitemap.xml", (req, res) => {
     <loc>https://korisellz.com/contact.html</loc>
     <priority>0.6</priority>
   </url>
-</urlset>`);
-});
-  res.type("application/xml");
 
-  res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE_URL}/</loc></url>
-  <url><loc>${SITE_URL}/track.html</loc></url>
-  <url><loc>${SITE_URL}/faq.html</loc></url>
-  <url><loc>${SITE_URL}/shipping.html</loc></url>
-  <url><loc>${SITE_URL}/contact.html</loc></url>
+  ${productUrls}
+
 </urlset>`);
 });
 

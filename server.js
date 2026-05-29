@@ -509,9 +509,14 @@ async function sendOrderToCJ({ session, items }) {
     throw new Error(response.data?.message || "CJ order failed");
   }
 
-  return response.data?.data?.orderId || response.data?.data?.cjOrderCode || null;
-}
-
+return (
+  response.data?.data?.orderId ||
+  response.data?.data?.cjOrderId ||
+  response.data?.data?.cjOrderCode ||
+  response.data?.data?.orderCode ||
+  response.data?.data?.orderNumber ||
+  null
+);
 async function sendConfirmationEmail({ session, items, cjOrderId }) {
   if (!resend) {
     console.log("Resend not configured. Skipping email.");

@@ -212,33 +212,139 @@ async function sendOrderToCJ({ session, items }) {
 }
 
 async function sendConfirmationEmail({ session, items, cjOrderId }) {
-  if (!resend) return;
+  if (!resend) {
+    console.log("Resend not configured. Skipping customer email.");
+    return;
+  }
 
   const customerEmail = session.customer_details?.email;
-  if (!customerEmail) return;
+
+  if (!customerEmail) {
+    console.log("No customer email found. Skipping customer email.");
+    return;
+  }
 
   const orderNumber = makeOrderNumber(session.id);
-  const itemRows = items.map((item) => `<li>${item.name} — Qty: ${item.quantity || 1}</li>`).join("");
+
+  const itemRows = items
+    .map(
+      (item) => `
+        <li>
+          <strong>${item.name}</strong><br>
+          SKU: ${item.sku}<br>
+          Quantity: ${item.quantity || 1}
+        </li>
+      `
+    )
+    .join("");
 
   const emailResponse = await resend.emails.send({
-    from: process.env.EMAIL_FROM || "Kori Sellz <support@korisellz.com>",
+    from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
     to: customerEmail,
-    subject: `Kori Sellz Order Confirmation ${orderNumber}`,
+    subject: `Your Kori Sellz Order Confirmation ${orderNumber}`,
     html: `
       <h2>Thank you for your order!</h2>
-      <p>Your Kori Sellz order has been received.</p>
+
+      <p>Your Kori Sellz order has been received and is being processed.</p>
+
       <p><strong>Order Number:</strong> ${orderNumber}</p>
       ${cjOrderId ? `<p><strong>CJ Order ID:</strong> ${cjOrderId}</p>` : ""}
-      <h3>Items:</h3>
+
+      <h3>Items Ordered:</h3>
       <ul>${itemRows}</ul>
-      <p>Shipping may take 8-23 business days after processing.</p>
-      <p><a href="${SITE_URL}/track.html">Track your order</a></p>
+
+      <p><strong>Shipping:</strong> Orders may take 8-23 business days after processing.</p>
+
+      <p>You can track your order here:</p>
+      <p><a href="${SITE_URL}/track.html">${SITE_URL}/track.html</a></p>
+
+      <p>If you need help, contact us at support@korisellz.com.</p>
+
       <p>Thank you for shopping with Kori Sellz.</p>
     `
   });
 
-  console.log("Confirmation email sent:", emailResponse);
+  console.log("Customer confirmation email sent:", emailResponse);
 }
+
+async function sendOwnerOrderEmail({ session, items, cjOrderId, fulfillmentError }) {
+  if (!resend) {
+    console.log("Resend not configured. Skipping owner email.");
+    return;
+  }
+
+  const notifyEmail =
+    process.env.ORDER_NOTIFY_EMAIL ||
+    process.env.SUPPORT_INBOX ||
+    "korisellz@gmail.com";
+
+  const orderNumber = makeOrderNumber(session.id);
+
+  const shipping =
+    session.collected_information?.shipping_details ||
+    session.shipping_details ||
+    {};
+
+  const address = shipping.address || {};
+  const customer = session.customer_details || {};
+
+  const itemRows = items
+    .map(
+      (item) => `
+        <li>
+          <strong>${item.name}</strong><br>
+          SKU: ${item.sku}<br>
+          Quantity: ${item.quantity || 1}<br>
+          Price: $${Number(item.price || 0).toFixed(2)}
+        </li>
+      `
+    )
+    .join("");
+
+  const ownerEmailResponse = await resend.emails.send({
+    from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
+    to: notifyEmail,
+    subject: `NEW ORDER: ${orderNumber}`,
+    html: `
+      <h2>New Kori Sellz Order</h2>
+
+      <p><strong>Order Number:</strong> ${orderNumber}</p>
+      <p><strong>Stripe Session:</strong> ${session.id}</p>
+      <p><strong>Payment Status:</strong> ${session.payment_status}</p>
+      <p><strong>Live Mode:</strong> ${session.livemode ? "YES" : "NO"}</p>
+
+      <h3>Customer</h3>
+      <p><strong>Name:</strong> ${shipping.name || customer.name || "Customer"}</p>
+      <p><strong>Email:</strong> ${customer.email || "No email"}</p>
+      <p><strong>Phone:</strong> ${customer.phone || "No phone"}</p>
+
+      <h3>Shipping Address</h3>
+      <p>
+        ${address.line1 || ""}<br>
+        ${address.line2 || ""}<br>
+        ${address.city || ""}, ${address.state || ""} ${address.postal_code || ""}<br>
+        ${address.country || "US"}
+      </p>
+
+      <h3>Items</h3>
+      <ul>${itemRows}</ul>
+
+      <h3>CJ Info</h3>
+      <p><strong>CJ Order ID:</strong> ${cjOrderId || "N/A"}</p>
+      ${
+        fulfillmentError
+          ? `<p style="color:red;"><strong>Fulfillment Error:</strong> ${fulfillmentError}</p>`
+          : `<p style="color:green;"><strong>Fulfillment:</strong> No error reported</p>`
+      }
+
+      <p>Check your admin dashboard here:</p>
+      <p><a href="${SITE_URL}/admin.html">${SITE_URL}/admin.html</a></p>
+    `
+  });
+
+  console.log("Owner order email sent:", ownerEmailResponse);
+}
+
 
 async function saveOrder({ session, items, status, cjOrderId, errorMessage }) {
   if (!pool) return;
@@ -337,11 +443,22 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
       console.error("Fulfillment Error:", fulfillmentError);
     }
 
-    try {
-      await sendConfirmationEmail({ session, items, cjOrderId });
-    } catch (error) {
-      console.error("Email Error:", error.response?.data || error.message);
-    }
+   try {
+  await sendConfirmationEmail({ session, items, cjOrderId });
+} catch (error) {
+  console.error("Customer Email Error:", error.response?.data || error.message);
+}
+
+try {
+  await sendOwnerOrderEmail({
+    session,
+    items,
+    cjOrderId,
+    fulfillmentError
+  });
+} catch (error) {
+  console.error("Owner Email Error:", error.response?.data || error.message);
+}
 
     await saveOrder({
       session,
@@ -538,7 +655,46 @@ app.post("/api/admin/update-tracking", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+app.get("/email-test", async (req, res) => {
+  try {
+    if (!resend) {
+      return res.status(500).json({
+        success: false,
+        error: "Resend is not configured"
+      });
+    }
 
+    const notifyEmail =
+      process.env.ORDER_NOTIFY_EMAIL ||
+      process.env.SUPPORT_INBOX ||
+      "korisellz@gmail.com";
+
+    const result = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "Kori Sellz <onboarding@resend.dev>",
+      to: notifyEmail,
+      subject: "Kori Sellz Email Test",
+      html: `
+        <h2>Email test worked</h2>
+        <p>If you received this, Kori Sellz emails are working.</p>
+      `
+    });
+
+    console.log("Email test sent:", result);
+
+    res.json({
+      success: true,
+      sentTo: notifyEmail,
+      result
+    });
+  } catch (error) {
+    console.error("Email test error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+  }
+});
 app.post("/api/contact", async (req, res) => {
   try {
     if (!resend) return res.status(500).json({ success: false, error: "Email not configured" });

@@ -470,7 +470,8 @@ async function initDatabase() {
     for (const column of columns) {
       await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ${column};`);
     }
-
+await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT;`);
+await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS carrier TEXT;`);
     console.log("Database ready");
   } catch (error) {
     console.error("Database startup error:", error.message);
@@ -1034,28 +1035,81 @@ app.get("/cj-auth-test", async (req, res) => {
 });
 
 app.get("/api/track/:orderId", async (req, res) => {
-  try {
-    const input = req.params.orderId;
-    const localOrder = await findLocalOrderByAnything(input);
+  const lookup = decodeURIComponent(req.params.orderId || "").trim();
 
-    if (localOrder) {
-      return res.json({
-        success: true,
-        source: "database",
-        data: mapOrderRow(localOrder)
+  if (!lookup) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing tracking or order number"
+    });
+  }
+
+  try {
+    if (!pool) {
+      return res.status(404).json({
+        success: false,
+        message: "Tracking is not available right now."
       });
     }
 
-    const token = await getCJAccessToken();
-    const response = await axios.get(
-      `https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/getOrderDetail?orderId=${encodeURIComponent(input)}`,
-      { headers: { "CJ-Access-Token": token } }
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        stripe_session_id,
+        order_number,
+        customer_name,
+        customer_email,
+        status,
+        cj_order_id,
+        tracking_number,
+        carrier,
+        created_at
+      FROM orders
+      WHERE
+        LOWER(COALESCE(order_number, '')) = LOWER($1)
+        OR LOWER(COALESCE(cj_order_id, '')) = LOWER($1)
+        OR LOWER(COALESCE(tracking_number, '')) = LOWER($1)
+        OR LOWER(COALESCE(stripe_session_id, '')) = LOWER($1)
+        OR id::text = $1
+      ORDER BY created_at DESC
+      LIMIT 1
+      `,
+      [lookup]
     );
 
-    res.json(response.data);
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "We could not find that order yet."
+      });
+    }
+
+    const order = result.rows[0];
+
+    return res.json({
+      success: true,
+      source: "database",
+      data: {
+        orderId: order.id,
+        stripeSessionId: order.stripe_session_id,
+        orderNumber: order.order_number,
+        customerName: order.customer_name,
+        customerEmail: order.customer_email,
+        status: order.status || "processing",
+        cjOrderId: order.cj_order_id || "N/A",
+        trackingNumber: order.tracking_number || null,
+        carrier: order.carrier || "USPS",
+        createdAt: order.created_at
+      }
+    });
   } catch (error) {
-    console.error("Tracking error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Tracking lookup failed" });
+    console.error("Tracking lookup error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while checking tracking."
+    });
   }
 });
 

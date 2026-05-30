@@ -3,21 +3,29 @@
 <head>
   <title>Track Order | Kori Sellz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/jpeg" href="/kori-logo.jpeg">
 </head>
+
 <body>
-  <header class="hero">
-    <a class="logo brand-logo" href="/"><img src="/kori-logo.jpeg" alt="Kori Sellz logo"></a>
-    <p>Track your order below.</p>
-    <a class="track-link" href="/">Return to Store</a>
+  <header class="hero small-hero">
+    <a class="logo brand-logo" href="/">
+      <img src="/kori-logo.jpeg" alt="Kori Sellz logo">
+    </a>
+    <p>Track Your Order</p>
+    <a class="track-link" href="/">Back to Store</a>
   </header>
 
   <main class="tracking-page">
     <div class="tracking-box">
-      <h2>Track Your Order</h2>
-      <p>Enter your CJ order code or order number.</p>
+      <h1>Track Your Order</h1>
+      <p>Enter your order number, CJ order ID, or tracking number.</p>
 
-      <input id="orderIdInput" placeholder="Example: SD26052421330806439001">
+      <input
+        id="trackingInput"
+        placeholder="Enter tracking or order number"
+      >
+
       <button onclick="trackOrder()">Track Order</button>
 
       <div id="trackingResult"></div>
@@ -26,52 +34,70 @@
 
   <script>
     async function trackOrder() {
-      const orderId = document.getElementById("orderIdInput").value.trim();
+      const input = document.getElementById("trackingInput").value.trim();
       const resultBox = document.getElementById("trackingResult");
 
-      if (!orderId) {
-        resultBox.innerHTML = "<p>Please enter an order number.</p>";
+      if (!input) {
+        resultBox.innerHTML = "<p>Please enter a tracking or order number.</p>";
         return;
       }
 
-      resultBox.innerHTML = "<p>Checking order...</p>";
+      resultBox.innerHTML = "<p>Checking tracking...</p>";
 
       try {
-        const res = await fetch(`/api/track/${encodeURIComponent(orderId)}`);
+        const res = await fetch(`/api/track/${encodeURIComponent(input)}`);
         const data = await res.json();
 
-        if (!data.result) {
+        if (!data.success) {
           resultBox.innerHTML = `
-            <p>We could not find that order yet.</p>
-            <p>Please double-check the number or try again later.</p>
+            <div class="tracking-card">
+              <h3>We could not find that order yet.</h3>
+              <p>Please double-check the number or try again later.</p>
+            </div>
           `;
           return;
         }
 
         const order = data.data;
+        const trackingNumber = order.trackingNumber || "Not available yet";
+        const carrier = order.carrier || "Carrier";
+        const status = order.status || "Processing";
+
+        let trackingLink = "";
+
+        if (order.trackingNumber) {
+          trackingLink = `
+            <p>
+              <a class="track-link" target="_blank" href="https://tools.usps.com/go/TrackConfirmAction?tLabels=${order.trackingNumber}">
+                Track with USPS
+              </a>
+            </p>
+          `;
+        }
 
         resultBox.innerHTML = `
           <div class="tracking-card">
             <h3>Order Found</h3>
-            <p><strong>Status:</strong> ${order.orderStatus || "Processing"}</p>
-            <p><strong>Order Number:</strong> ${order.orderNum || "N/A"}</p>
-            <p><strong>CJ Order Code:</strong> ${order.cjOrderCode || "N/A"}</p>
-            <p><strong>Shipping Method:</strong> ${order.logisticName || "Not assigned yet"}</p>
-            <p><strong>Tracking Number:</strong> ${order.trackNumber || "Not available yet"}</p>
-            ${
-              order.trackingUrl
-                ? `<a href="${order.trackingUrl}" target="_blank">View Tracking</a>`
-                : `<p>Tracking link is not available yet.</p>`
-            }
+            <p><strong>Status:</strong> ${status}</p>
+            <p><strong>Order Number:</strong> ${order.orderNumber || "N/A"}</p>
+            <p><strong>CJ Order ID:</strong> ${order.cjOrderId || "N/A"}</p>
+            <p><strong>Carrier:</strong> ${carrier}</p>
+            <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
+            ${trackingLink}
+            <p class="small-note">Shipping may take 8-23 business days after processing.</p>
           </div>
         `;
       } catch (error) {
-        resultBox.innerHTML = "<p>Tracking lookup failed. Please try again later.</p>";
+        resultBox.innerHTML = `
+          <div class="tracking-card">
+            <h3>Tracking lookup failed.</h3>
+            <p>Please try again later or contact Kori Sellz support.</p>
+          </div>
+        `;
       }
     }
   </script>
+
   <script src="/footer.js"></script>
 </body>
 </html>
-
-

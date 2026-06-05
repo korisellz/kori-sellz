@@ -1214,7 +1214,7 @@ app.post("/api/checkout", async (req, res) => {
           }))
         )
       },
-      success_url: `${SITE_URL}/success`,
+    success_url: `${SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`
       cancel_url: `${SITE_URL}/cancel`
     });
 
@@ -1225,28 +1225,88 @@ app.post("/api/checkout", async (req, res) => {
   }
 });
 
-app.get("/success", (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Payment Successful | Kori Sellz</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="/style.css">
-      <link rel="icon" type="image/jpeg" href="/kori-logo.jpeg">
-    </head>
-    <body>
-      <main class="tracking-page">
-        <div class="tracking-box">
-          <h1>Payment Successful!</h1>
-          <p>Your order has been received and is being processed.</p>
-          <p>You will receive an email confirmation shortly.</p>
-          <a class="track-link" href="/">Return to Kori Sellz</a>
-        </div>
-      </main>
-    </body>
-    </html>
-  `);
+app.get("/success", async (req, res) => {
+  try {
+    const sessionId = req.query.session_id;
+
+    let orderId = "UNKNOWN_ORDER";
+    let customerEmail = "";
+    let countryCode = "US";
+
+    if (sessionId) {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      orderId = makeOrderNumber(session.id);
+      customerEmail = session.customer_details?.email || "";
+      countryCode =
+        session.collected_information?.shipping_details?.address?.country ||
+        session.shipping_details?.address?.country ||
+        "US";
+    }
+
+    const estimatedDeliveryDate = new Date();
+    estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + 23);
+    const deliveryDate = estimatedDeliveryDate.toISOString().split("T")[0];
+
+    res.send(`
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Payment Successful | Kori Sellz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/jpeg" href="/kori-logo.jpeg">
+</head>
+<body>
+  <main class="tracking-page">
+    <div class="tracking-box">
+      <h1>Payment Successful!</h1>
+      <p>Your order has been received and is being processed.</p>
+      <p>You should receive an email confirmation shortly.</p>
+      <a class="track-link" href="/">Return to Kori Sellz</a>
+    </div>
+  </main>
+
+  <script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+
+  <script>
+    window.renderOptIn = function() {
+      window.gapi.load("surveyoptin", function() {
+        window.gapi.surveyoptin.render({
+          "merchant_id": 5803682608,
+          "order_id": "${orderId}",
+          "email": "${customerEmail}",
+          "delivery_country": "${countryCode}",
+          "estimated_delivery_date": "${deliveryDate}"
+        });
+      });
+    };
+  </script>
+</body>
+</html>
+    `);
+  } catch (error) {
+    console.error("Success page error:", error.message);
+
+    res.send(`
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Payment Successful | Kori Sellz</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="tracking-page">
+    <div class="tracking-box">
+      <h1>Payment Successful!</h1>
+      <p>Your order has been received.</p>
+      <a class="track-link" href="/">Return to Kori Sellz</a>
+    </div>
+  </main>
+</body>
+</html>
+    `);
+  }
 });
 
 app.get("/cancel", (req, res) => {

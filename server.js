@@ -1214,8 +1214,8 @@ app.post("/api/checkout", async (req, res) => {
           }))
         )
       },
-    success_url: `${SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`
-      cancel_url: `${SITE_URL}/cancel`
+    success_url: `${SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+cancel_url: `${SITE_URL}/cancel`
     });
 
     res.json({ url: session.url });

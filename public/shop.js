@@ -1,157 +1,116 @@
 let products = [];
-let cart = [];
+let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-function getProductBadge(productId) {
-  const badges = {
-    1: "Best Seller",
-    2: "Popular",
-    3: "Best Seller",
-    4: "New Arrival",
-    5: "Creator Pick",
-    6: "Sale",
-    7: "Home Favorite",
-    8: "Security Pick",
-    9: "Beauty Find",
-    10: "Low Price"
-  };
+const categoryBadges = {
+  "Phone Cases": "Spooky Style",
+  Beauty: "Beauty Pick",
+  Costumes: "Costume Pick",
+  "Pet Costumes": "Pet Pick",
+  Decor: "Decor Pick"
+};
 
-  return badges[productId] || "Trending";
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function priceLabel(product) {
+  const minimum = Number(product.price || 0);
+  const maximum = Number(product.maxPrice || minimum);
+  return maximum > minimum ? `From $${minimum.toFixed(2)}` : `$${minimum.toFixed(2)}`;
+}
+
+function getProductBadge(product) {
+  return categoryBadges[product.category] || "Halloween Pick";
 }
 
 async function loadProducts() {
   const productsContainer = document.getElementById("products");
-
-  productsContainer.innerHTML = `
-    <div class="card">
-      <h2>Loading products...</h2>
-      <p>Please wait while Kori Sellz loads.</p>
-    </div>
-  `;
+  productsContainer.innerHTML = `<div class="card"><h2>Loading products...</h2><p>Please wait while Kori Sellz loads.</p></div>`;
 
   const res = await fetch("/api/products");
+  if (!res.ok) throw new Error("Products API failed");
 
-  if (!res.ok) {
-    throw new Error("Products API failed");
-  }
-
-  products = await res.json();
-
-  products = products.map((product) => ({
+  products = (await res.json()).map((product) => ({
     ...product,
-    category: product.category || "Tech Accessories",
-    rating: 4.8,
-    reviews: Math.floor(Math.random() * 300) + 50,
-    inventory: Math.floor(Math.random() * 20) + 5,
-    badge: getProductBadge(product.id)
+    inventory: (product.variants || []).reduce((sum, variant) => sum + Number(variant.inventory || 0), 0),
+    badge: getProductBadge(product)
   }));
 
+  const validSkus = new Set(products.flatMap((product) => (product.variants || []).map((variant) => variant.sku)));
+  cart = cart.filter((item) => validSkus.has(item.sku));
+  saveCart();
+
   renderProducts();
+  renderFeaturedProducts();
+  renderCart();
 }
-renderFeaturedProducts();
+
 function renderProducts() {
-  const searchInput = document.getElementById("searchInput");
-  const categoryFilter = document.getElementById("categoryFilter");
+  const search = (document.getElementById("searchInput")?.value || "").toLowerCase();
+  const category = document.getElementById("categoryFilter")?.value || "All";
   const productsContainer = document.getElementById("products");
+  const filtered = products.filter((product) =>
+    product.name.toLowerCase().includes(search) && (category === "All" || product.category === category)
+  );
 
-  const search = searchInput ? searchInput.value.toLowerCase() : "";
-  const category = categoryFilter ? categoryFilter.value : "All";
-
-  const filtered = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(search);
-    const matchesCategory =
-      category === "All" || product.category === category;
-
-    return matchesSearch && matchesCategory;
-  });
-
-  if (filtered.length === 0) {
-    productsContainer.innerHTML = `
-      <div class="card">
-        <h2>No products found</h2>
-        <p>Try another search or category.</p>
-      </div>
-    `;
+  if (!filtered.length) {
+    productsContainer.innerHTML = `<div class="card"><h2>No products found</h2><p>Try another search or category.</p></div>`;
     return;
   }
 
-  productsContainer.innerHTML = filtered
-    .map(
-      (product) => `
-        <div class="card">
-          <div class="badge-row">
-            <span class="badge">${product.category}</span>
-            <span class="product-badge">${product.badge}</span>
-          </div>
-
-         <img 
-  src="${product.image}" 
-  alt="${product.name}" 
-  loading="lazy"
-  onerror="this.src='/kori-logo.jpeg'"
->
-
-          <h2>${product.name}</h2>
-
-          <div class="rating">★★★★★</div>
-
-          <p>${product.rating} rating • ${product.reviews} reviews</p>
-
-          <p class="stock">Only ${product.inventory} left in stock</p>
-
-          <p class="price">$${product.price.toFixed(2)}</p>
-
-          <a class="details-btn" href="/product.html?id=${product.id}">View Details</a>
-
-          <button onclick="addToCart(${product.id})">Add to Cart</button>
-
-          <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
-        </div>
-      `
-    )
-    .join("");
+  productsContainer.innerHTML = filtered.map((product) => {
+    const hasOptions = (product.variants || []).length > 1;
+    return `
+      <div class="card">
+        <div class="badge-row"><span class="badge">${product.category}</span><span class="product-badge">${product.badge}</span></div>
+        <img src="${product.image}" alt="${product.name}" onerror="this.src='/kori-logo.jpeg'">
+        <h2>${product.name}</h2>
+        <p class="stock">In stock with supplier</p>
+        <p class="price">${priceLabel(product)}</p>
+        <a class="details-btn" href="/product.html?id=${product.id}">${hasOptions ? "Choose Options" : "View Details"}</a>
+        ${hasOptions ? "" : `<button onclick="addToCart(${product.id})">Add to Cart</button><button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>`}
+      </div>`;
+  }).join("");
 }
 
 function setCategory(category, button) {
   document.getElementById("categoryFilter").value = category;
-
-  document.querySelectorAll(".category-btn").forEach((btn) => {
-    btn.classList.remove("active");
-  });
-
+  document.querySelectorAll(".category-btn").forEach((btn) => btn.classList.remove("active"));
   button.classList.add("active");
-
   renderProducts();
 }
 
-function addToCart(productId) {
-  const product = products.find((p) => p.id === productId);
+function cartItemFrom(product, variant) {
+  return { id: product.id, name: product.name, category: product.category, sku: variant.sku,
+    option: variant.option || "Standard", price: Number(variant.price), image: variant.image || product.image, quantity: 1 };
+}
 
-  if (!product) {
-    alert("Product not found.");
+function addToCart(productId, variantSku) {
+  const product = products.find((entry) => Number(entry.id) === Number(productId));
+  if (!product) return alert("Product not found.");
+  const variants = product.variants || [];
+  if (variants.length > 1 && !variantSku) {
+    window.location.href = `/product.html?id=${product.id}`;
     return;
   }
-
-  const existing = cart.find((item) => item.id === productId);
-
-  if (existing) {
-    existing.quantity += 1;
-  } else {
-    cart.push({ ...product, quantity: 1 });
-  }
-
+  const variant = variants.find((entry) => entry.sku === variantSku) || variants[0];
+  if (!variant) return alert("This product is currently unavailable.");
+  const existing = cart.find((item) => item.sku === variant.sku);
+  if (existing) existing.quantity += 1;
+  else cart.push(cartItemFrom(product, variant));
+  saveCart();
   renderCart();
 }
 
 function buyNow(productId) {
-  const product = products.find((p) => p.id === productId);
-
-  if (!product) {
-    alert("Product not found.");
+  const product = products.find((entry) => Number(entry.id) === Number(productId));
+  if (!product) return alert("Product not found.");
+  if ((product.variants || []).length > 1) {
+    window.location.href = `/product.html?id=${product.id}`;
     return;
   }
-
-  cart = [{ ...product, quantity: 1 }];
-  renderCart();
+  cart = [];
+  addToCart(productId);
   checkout();
 }
 
@@ -159,118 +118,66 @@ function renderCart() {
   const cartItems = document.getElementById("cartItems");
   const cartCount = document.getElementById("cartCount");
   const cartTotal = document.getElementById("cartTotal");
-
+  if (!cartItems || !cartCount || !cartTotal) return;
   cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  if (cart.length === 0) {
+  if (!cart.length) {
     cartItems.innerHTML = "<p>Your cart is empty.</p>";
     cartTotal.textContent = "$0.00";
     return;
   }
-
-  cartItems.innerHTML = cart
-    .map(
-      (item) => `
-        <div class="cart-item">
-          <strong>${item.name}</strong>
-          <p>$${item.price.toFixed(2)}</p>
-
-          <div class="qty-controls">
-            <button onclick="changeQty(${item.id}, -1)">-</button>
-            <span>${item.quantity}</span>
-            <button onclick="changeQty(${item.id}, 1)">+</button>
-          </div>
-
-          <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
-        </div>
-      `
-    )
-    .join("");
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  cartItems.innerHTML = cart.map((item, index) => `
+    <div class="cart-item"><strong>${item.name}</strong>
+      <p>${item.option && item.option !== "Standard" ? item.option : ""}</p><p>$${Number(item.price).toFixed(2)}</p>
+      <div class="qty-controls"><button onclick="changeQty(${index}, -1)">-</button><span>${item.quantity}</span><button onclick="changeQty(${index}, 1)">+</button></div>
+      <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+    </div>`).join("");
+  const total = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
   cartTotal.textContent = `Total: $${total.toFixed(2)}`;
 }
 
-function changeQty(productId, amount) {
-  const item = cart.find((i) => i.id === productId);
-
-  if (!item) return;
-
-  item.quantity += amount;
-
-  if (item.quantity <= 0) {
-    removeFromCart(productId);
-    return;
-  }
-
+function changeQty(index, amount) {
+  if (!cart[index]) return;
+  cart[index].quantity += amount;
+  if (cart[index].quantity <= 0) cart.splice(index, 1);
+  saveCart();
   renderCart();
 }
 
-function removeFromCart(productId) {
-  cart = cart.filter((item) => item.id !== productId);
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  saveCart();
   renderCart();
 }
 
 function toggleCart() {
-  document.getElementById("cartPanel").classList.toggle("open");
+  document.getElementById("cartPanel")?.classList.toggle("open");
 }
 
 async function checkout() {
-  if (cart.length === 0) {
-    alert("Your cart is empty");
-    return;
-  }
-
+  if (!cart.length) return alert("Your cart is empty");
   try {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ items: cart })
-    });
-
+    const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: cart }) });
     const data = await res.json();
-
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("Checkout failed");
-    }
+    if (data.url) window.location.href = data.url;
+    else alert(data.error || "Checkout failed");
   } catch (error) {
     console.error("Checkout failed:", error);
     alert("Checkout failed. Please try again.");
   }
 }
+
 function renderFeaturedProducts() {
-  const featuredIds = [3, 4, 5, 2, 20];
-
-  const featured = products.filter(product => featuredIds.includes(product.id));
-
+  const featured = products.filter((product) => [1, 11, 21, 31, 41].includes(Number(product.id)));
   const featuredBox = document.getElementById("featuredProducts");
-
   if (!featuredBox) return;
-
-  featuredBox.innerHTML = featured.map(product => `
-    <div class="featured-card">
-      <img src="${product.image}" alt="${product.name}">
-      <div>
-        <span class="badge">FEATURED</span>
-        <h3>${product.name}</h3>
-        <p class="price">$${product.price.toFixed(2)}</p>
-        <button onclick="addToCart(${product.id})">Add to Cart</button>
-        <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
-      </div>
-    </div>
-  `).join("");
+  featuredBox.innerHTML = featured.map((product) => `
+    <div class="featured-card"><img src="${product.image}" alt="${product.name}" onerror="this.src='/kori-logo.jpeg'">
+      <div><span class="badge">FEATURED</span><h3>${product.name}</h3><p class="price">${priceLabel(product)}</p>
+      <a class="details-btn" href="/product.html?id=${product.id}">Choose Options</a></div>
+    </div>`).join("");
 }
+
 loadProducts().catch((error) => {
   console.error("Products failed to load:", error);
-
-  document.getElementById("products").innerHTML = `
-    <div class="card">
-      <h2>Products failed to load</h2>
-      <p>Please refresh the page or try again soon.</p>
-    </div>
-  `;
+  document.getElementById("products").innerHTML = `<div class="card"><h2>Products are temporarily unavailable</h2><p>Please refresh and try again.</p></div>`;
 });

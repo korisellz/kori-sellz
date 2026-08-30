@@ -1095,3 +1095,58 @@ button:hover {
     width: 100%;
   }
 }
+
+/* Halloween seasonal catalog */
+:root {
+  --halloween-orange: #ff7518;
+  --halloween-purple: #7f3cff;
+  --halloween-black: #09070d;
+}
+
+body {
+  background: radial-gradient(circle at top, #241033 0, var(--halloween-black) 48%);
+}
+
+.hero {
+  background: linear-gradient(135deg, #14091d, #35104b 55%, #6b2508);
+  border-bottom: 2px solid var(--halloween-orange);
+}
+
+.card,
+.featured-card,
+.product-detail-card,
+.related-card {
+  border-color: #6b3b7e;
+  box-shadow: 0 12px 30px #0009, 0 0 18px #ff751814;
+}
+
+.category-btn.active,
+.category-btn:hover,
+.product-actions button,
+.card button {
+  background: var(--halloween-orange);
+  color: #160b05;
+  font-weight: 700;
+}
+
+.buy-now,
+.details-btn {
+  background: var(--halloween-purple) !important;
+  color: white !important;
+}
+
+.variant-label {
+  display: block;
+  margin-top: 18px;
+  font-weight: 700;
+  color: #ffd7b8;
+}
+
+.variant-select {
+  width: 100%;
+  max-width: 520px;
+  margin: 8px 0;
+  background: #17101f;
+  color: white;
+  border: 1px solid #8c58a0;
+}

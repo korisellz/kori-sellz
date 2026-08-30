@@ -5,6 +5,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { Resend } from "resend";
 import pg from "pg";
+import { products as halloweenProducts } from "./products.js";
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ console.log("Resend key loaded?", process.env.RESEND_API_KEY ? "YES" : "NO");
 console.log("Admin password loaded?", process.env.ADMIN_PASSWORD ? "YES" : "NO");
 console.log("Database loaded?", process.env.DATABASE_URL ? "YES" : "NO");
 
-const products = [
+const legacyProducts = [
   {
     id: 1,
     name: "Type-C to HDMI VGA 5-in-1 Dual Display Converter",
@@ -637,6 +638,9 @@ const products = [
 }
 ];
 
+// The active catalog is generated from Kori's CJ Added Products export.
+const products = halloweenProducts;
+
 function safeText(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
@@ -652,17 +656,37 @@ function makeOrderNumber(sessionId) {
 
 function getFullItems(itemsFromCheckout = []) {
   return itemsFromCheckout.map((item) => {
-    const found = products.find((p) => String(p.id) === String(item.id) || p.sku === item.sku);
+    const found = products.find(
+      (product) =>
+        String(product.id) === String(item.id) ||
+        product.sku === item.sku ||
+        product.variants?.some((variant) => variant.sku === item.sku)
+    );
+
+    if (!found) {
+      throw new Error("A product in the cart is no longer available.");
+    }
+
+    const variant = found.variants?.find((entry) => entry.sku === item.sku);
+
+    if (found.variants?.length > 1 && !variant) {
+      throw new Error(`Please choose an option for ${found.name}.`);
+    }
+
+    const selected = variant || found.variants?.[0] || found;
+    const quantity = Math.min(10, Math.max(1, Number.parseInt(item.quantity, 10) || 1));
 
     return {
-      id: found?.id || item.id,
-      name: found?.name || item.name || "Kori Sellz Product",
-      category: found?.category || item.category || "Kori Sellz",
-      sku: found?.sku || item.sku,
-      price: Number(found?.price || item.price || 0),
-      cost: Number(found?.cost || item.cost || 0),
-      image: found?.image || item.image || "",
-      quantity: Number(item.quantity || 1)
+      id: found.id,
+      name: found.name,
+      category: found.category,
+      option: selected.option || "Standard",
+      sku: selected.sku,
+      price: Number(selected.price),
+      cost: Number(selected.cost),
+      image: selected.image || found.image,
+      shippingFrom: selected.shippingFrom || "CN",
+      quantity
     };
   });
 }
@@ -769,12 +793,12 @@ async function getCJAccessToken() {
   return token;
 }
 
-async function sendOrderToCJ({ session, items }) {
+async function sendOrderToCJ({ session, items, warehouseCode = "CN" }) {
   const token = await getCJAccessToken();
   const shipping = session.collected_information?.shipping_details || session.shipping_details || {};
   const address = shipping.address || {};
   const customer = session.customer_details || {};
-  const orderNumber = makeOrderNumber(session.id);
+  const orderNumber = `${makeOrderNumber(session.id)}-${warehouseCode}`;
 
   const cjPayload = {
     orderNumber,
@@ -791,11 +815,16 @@ async function sendOrderToCJ({ session, items }) {
     email: customer.email || "",
     remark: "Kori Sellz order from Stripe",
     logisticName: "CJPacket Ordinary",
-    fromCountryCode: "CN",
+    fromCountryCode: warehouseCode,
+    platform: "Api",
+    orderFlow: 1,
     products: items.map((item, index) => ({
       sku: item.sku,
       quantity: item.quantity || 1,
-      unitPrice: item.cost || item.price,
+      variantOptions: item.option,
+      storeProductId: String(item.id),
+      storeProductImg: item.image,
+      storeProductName: item.name,
       storeLineItemId: `${orderNumber}-${index + 1}`
     }))
   };
@@ -803,7 +832,7 @@ async function sendOrderToCJ({ session, items }) {
   console.log("CJ payload being sent:", JSON.stringify(cjPayload, null, 2));
 
   const response = await axios.post(
-    "https://developers.cjdropshipping.cn/api2.0/v1/shopping/order/createOrderV2",
+    "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrderV2",
     cjPayload,
     {
       headers: {
@@ -827,6 +856,22 @@ async function sendOrderToCJ({ session, items }) {
     response.data?.data?.orderNumber ||
     null
   );
+}
+
+async function sendOrdersToCJ({ session, items }) {
+  const groups = items.reduce((result, item) => {
+    const warehouseCode = item.shippingFrom === "US" ? "US" : "CN";
+    result[warehouseCode] ||= [];
+    result[warehouseCode].push(item);
+    return result;
+  }, {});
+
+  const orderIds = [];
+  for (const [warehouseCode, warehouseItems] of Object.entries(groups)) {
+    const orderId = await sendOrderToCJ({ session, items: warehouseItems, warehouseCode });
+    if (orderId) orderIds.push(orderId);
+  }
+  return orderIds.join(",");
 }
 
 async function sendCustomerConfirmationEmail({ session, items, cjOrderId }) {
@@ -1095,7 +1140,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 
     try {
       if (session.livemode === true) {
-        cjOrderId = await sendOrderToCJ({ session, items });
+        cjOrderId = await sendOrdersToCJ({ session, items });
         console.log("CJ Order ID:", cjOrderId || "No CJ order ID found");
       } else {
         console.log("Stripe test payment detected — skipping real CJ order creation.");
@@ -1134,8 +1179,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+function toStorefrontProduct(product) {
+  const { cost, sourceAddedTime, variants = [], ...storefrontProduct } = product;
+  return {
+    ...storefrontProduct,
+    variants: variants.map(({ cost: variantCost, ...variant }) => variant)
+  };
+}
+
 app.get("/api/products", (req, res) => {
-  res.json(products);
+  res.json(products.map(toStorefrontProduct));
 });
 
 app.get("/api/products/:id", (req, res) => {
@@ -1145,7 +1198,7 @@ app.get("/api/products/:id", (req, res) => {
     return res.status(404).json({ error: "Product not found" });
   }
 
-  res.json(product);
+  res.json(toStorefrontProduct(product));
 });
 
 app.post("/api/checkout", async (req, res) => {
@@ -1200,7 +1253,10 @@ app.post("/api/checkout", async (req, res) => {
       line_items: items.map((item) => ({
         price_data: {
           currency: "usd",
-          product_data: { name: item.name, images: item.image ? [item.image] : [] },
+          product_data: {
+            name: item.option && item.option !== "Standard" ? `${item.name} — ${item.option}` : item.name,
+            images: item.image ? [item.image] : []
+          },
           unit_amount: Math.round(item.price * 100)
         },
         quantity: item.quantity || 1
@@ -1210,6 +1266,7 @@ app.post("/api/checkout", async (req, res) => {
           items.map((item) => ({
             id: item.id,
             sku: item.sku,
+            option: item.option,
             quantity: item.quantity || 1
           }))
         )
@@ -1221,7 +1278,8 @@ cancel_url: `${SITE_URL}/cancel`
     res.json({ url: session.url });
   } catch (error) {
     console.error("Checkout error:", error.message);
-    res.status(500).json({ error: "Checkout failed" });
+    const cartError = /product|option|cart/i.test(error.message || "");
+    res.status(cartError ? 400 : 500).json({ error: cartError ? error.message : "Checkout failed" });
   }
 });
 

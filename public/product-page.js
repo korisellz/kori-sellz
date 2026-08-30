@@ -1,120 +1,72 @@
 const params = new URLSearchParams(window.location.search);
 const productParam = params.get("id") || params.get("sku");
-
 let products = [];
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-function saveCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
+function saveCart() { localStorage.setItem("cart", JSON.stringify(cart)); }
 
 function updateCartCount() {
-  const cartCount = document.getElementById("cartCount");
-  if (!cartCount) return;
-
-  cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const count = document.getElementById("cartCount");
+  if (count) count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
 function getProductByParam(param) {
-  if (!param) return null;
-
-  return products.find((item) => {
-    return String(item.id) === String(param) || String(item.sku) === String(param);
-  });
+  return products.find((item) => String(item.id) === String(param) || item.sku === param || item.variants?.some((variant) => variant.sku === param));
 }
 
-function getBoxItems(product) {
-  const boxes = {
-    1: ["1 x Type-C to HDMI VGA adapter", "1 x Basic packaging"],
-    2: ["1 x 4-in-1 magnetic wireless charging station", "1 x Charging cable", "1 x Basic packaging"],
-    3: ["1 x V14 drone", "1 x Remote controller", "2 x Drone batteries", "1 x USB charging cable", "1 x Spare propeller set", "1 x Basic packaging"],
-    4: ["1 x V14 drone", "1 x Remote controller", "3 x Drone batteries", "1 x USB charging cable", "1 x Spare propeller set", "1 x Basic packaging"],
-    5: ["1 x Wireless lavalier microphone set", "1 x iPhone receiver", "1 x Charging cable", "1 x Basic packaging"],
-    6: ["1 x 4K waterproof sport camera", "1 x Waterproof case", "1 x Charging cable", "1 x Mounting accessories set", "1 x Basic packaging"],
-    7: ["1 x 1080P LED mini projector", "1 x Power cable", "1 x Remote control if included by supplier", "1 x Basic packaging"],
-    8: ["1 x Door stop alarm device", "1 x Basic packaging"],
-    9: ["1 x Electric detangling scalp massage brush", "1 x Basic packaging"],
-    10: ["1 x Multi-function charging cable storage box", "1 x Included charging cable set", "1 x Basic packaging"],
-    11: ["1 x Mini car vacuum cleaner", "1 x Power cable or charging cable if included", "1 x Nozzle/accessory attachment if included", "1 x Basic packaging"],
-    12: ["1 x LED sunset projection lamp", "1 x USB power cable", "1 x Basic packaging"],
-    13: ["1 x Bluetooth sleep headphones eye mask", "1 x USB charging cable", "1 x Basic packaging"],
-    14: ["1 x Portable blender cup", "1 x USB charging cable", "1 x Basic packaging"],
-    15: ["1 x Electric makeup brush cleaner", "1 x Cleaning bowl or holder if included", "1 x USB charging cable", "1 x Basic packaging"],
-    16: ["1 x Magnetic wireless charging car holder", "1 x Mounting accessory", "1 x Charging cable if included", "1 x Basic packaging"],
-    17: ["1 x Motion sensor LED night light", "1 x Charging cable or adhesive/mounting accessory if included", "1 x Basic packaging"],
-    18: ["1 x Phone tripod", "1 x Bluetooth remote", "1 x Phone holder mount", "1 x Basic packaging"],
-    19: ["1 x USB rechargeable neck fan", "1 x USB charging cable", "1 x Basic packaging"],
-    20: ["1 x Mini WiFi indoor security camera", "1 x Power cable", "1 x Mounting accessory if included", "1 x Basic packaging"],
-    21: ["1 x Heated eyelash curler", "1 x USB charging cable", "1 x Basic packaging"],
-    22: ["1 x LED makeup mirror", "1 x Power/charging cable if included", "1 x Basic packaging"],
-    23: ["1 x Electric facial cleansing brush", "1 x Charging cable if rechargeable", "1 x Basic packaging"],
-    24: ["1 x Wireless home security alarm kit", "6 x Alarm pieces/sensors", "1 x Basic packaging"],
-    25: ["10 x Personal safety alarms", "1 x Basic packaging"],
-    26: ["1 x 1080P WiFi video doorbell camera", "1 x Mounting bracket", "1 x Screw/accessory kit if included", "1 x Charging cable if rechargeable", "1 x Basic packaging"],
-    27: ["1 x Product unit", "1 x Included accessories shown in product photos", "1 x Basic packaging"],
-    28: ["1 x Wired dash camera unit", "1 x Rear camera if included", "1 x Car power cable", "1 x Mounting accessories", "1 x Basic packaging"],
-    29: ["1 x Product unit", "1 x Included accessories shown in product photos", "1 x Basic packaging"]
-  };
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
+}
 
-  return boxes[Number(product.id)] || ["1 x Product unit", "1 x Basic packaging"];
+function selectedVariant(product) {
+  const sku = document.getElementById("variantSelect")?.value;
+  return product.variants?.find((variant) => variant.sku === sku) || product.variants?.[0];
+}
+
+function updateSelectedVariant(productId) {
+  const product = products.find((item) => Number(item.id) === Number(productId));
+  const variant = product && selectedVariant(product);
+  if (!variant) return;
+  document.getElementById("selectedPrice").textContent = `$${Number(variant.price).toFixed(2)}`;
+  document.getElementById("selectedSku").textContent = variant.sku;
+  document.getElementById("selectedInventory").textContent = `${Number(variant.inventory).toLocaleString()} available`;
+  const image = document.getElementById("productImage");
+  if (image && variant.image) image.src = variant.image;
+}
+
+function cartItemFrom(product, variant) {
+  return { id: product.id, name: product.name, category: product.category, sku: variant.sku,
+    option: variant.option || "Standard", price: Number(variant.price), image: variant.image || product.image, quantity: 1 };
 }
 
 function addToCart(productId) {
-  const item = products.find((p) => Number(p.id) === Number(productId));
-
-  if (!item) {
-    alert("Product not found.");
-    return;
-  }
-
-  const existing = cart.find((cartItem) => Number(cartItem.id) === Number(productId));
-
-  if (existing) {
-    existing.quantity += 1;
-  } else {
-    cart.push({ ...item, quantity: 1 });
-  }
-
+  const product = products.find((item) => Number(item.id) === Number(productId));
+  const variant = product && selectedVariant(product);
+  if (!product || !variant) return alert("Please choose an available option.");
+  const existing = cart.find((item) => item.sku === variant.sku);
+  if (existing) existing.quantity += 1;
+  else cart.push(cartItemFrom(product, variant));
   saveCart();
   updateCartCount();
   alert("Added to cart!");
 }
 
 function buyNow(productId) {
-  const item = products.find((p) => Number(p.id) === Number(productId));
-
-  if (!item) {
-    alert("Product not found.");
-    return;
-  }
-
-  cart = [{ ...item, quantity: 1 }];
+  const product = products.find((item) => Number(item.id) === Number(productId));
+  const variant = product && selectedVariant(product);
+  if (!product || !variant) return alert("Please choose an available option.");
+  cart = [cartItemFrom(product, variant)];
   saveCart();
   checkout();
 }
 
 async function checkout() {
-  if (cart.length === 0) {
-    alert("Your cart is empty.");
-    return;
-  }
-
+  if (!cart.length) return alert("Your cart is empty.");
   try {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ items: cart })
-    });
-
+    const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: cart }) });
     const data = await res.json();
-
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("Checkout failed.");
-    }
+    if (data.url) window.location.href = data.url;
+    else alert(data.error || "Checkout failed.");
   } catch (error) {
     console.error("Checkout failed:", error);
     alert("Checkout failed.");
@@ -122,125 +74,53 @@ async function checkout() {
 }
 
 function getRelatedProducts(currentProduct) {
-  return products
-    .filter((item) => item.category === currentProduct.category && item.id !== currentProduct.id)
-    .slice(0, 4);
+  return products.filter((item) => item.category === currentProduct.category && item.id !== currentProduct.id).slice(0, 4);
 }
 
 function renderProductPage(product) {
   const productPage = document.getElementById("productPage");
-
-  if (!productPage) return;
-
   if (!product) {
-    productPage.innerHTML = `
-      <section class="product-detail-card">
-        <h1>Product not found</h1>
-        <p>This product could not be found.</p>
-        <p>Product link used: ${productParam || "No product ID found"}</p>
-        <a class="track-link" href="/">Return to Store</a>
-      </section>
-    `;
+    productPage.innerHTML = `<section class="product-detail-card"><h1>Product not found</h1><a class="track-link" href="/">Return to Store</a></section>`;
     return;
   }
 
-  const relatedProducts = getRelatedProducts(product);
-  const boxItems = getBoxItems(product);
-
+  const variants = product.variants || [];
+  const first = variants[0];
+  const related = getRelatedProducts(product);
   productPage.innerHTML = `
-    <section class="product-detail-card">
-      <div class="product-detail-grid">
-        <div class="product-detail-image-wrap">
-          <img class="product-detail-image" src="${product.image}" alt="${product.name}" onerror="this.src='/kori-logo.jpeg'">
-        </div>
-
-        <div class="product-detail-info">
-          <span class="badge">${product.category || "Kori Sellz"}</span>
-          <h1>${product.name}</h1>
-
-          <div class="rating">★★★★★</div>
-          <p class="review-text">4.8 rating • Customer favorite</p>
-
-          <p class="product-detail-price">$${Number(product.price).toFixed(2)}</p>
-
-          <p class="product-description">
-            ${product.description || "A trending Kori Sellz product made for everyday use."}
-          </p>
-
-          <div class="product-info-box">
-            <h3>Shipping Estimate</h3>
-            <p>${product.shipping || "Estimated delivery: 8-23 business days after processing."}</p>
-          </div>
-
-          <div class="product-info-box">
-            <h3>What’s in the Box</h3>
-            <ul>
-              ${boxItems.map((item) => `<li>${item}</li>`).join("")}
-            </ul>
-          </div>
-
-          <div class="product-info-box">
-            <h3>Product Details</h3>
-            <p><strong>SKU:</strong> ${product.sku || "N/A"}</p>
-            <p><strong>Category:</strong> ${product.category || "N/A"}</p>
-          </div>
-
-          <div class="product-actions">
-            <button onclick="addToCart(${product.id})">Add to Cart</button>
-            <button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="related-section">
-      <h2>Related Products</h2>
-      <div class="related-products">
-        ${
-          relatedProducts.length
-            ? relatedProducts.map((item) => `
-              <div class="related-card">
-                <img src="${item.image}" alt="${item.name}" onerror="this.src='/kori-logo.jpeg'">
-                <h3>${item.name}</h3>
-                <p>$${Number(item.price).toFixed(2)}</p>
-                <a href="/product.html?id=${item.id}">View Details</a>
-              </div>
-            `).join("")
-            : "<p>No related products found.</p>"
-        }
-      </div>
-    </section>
-  `;
+    <section class="product-detail-card"><div class="product-detail-grid">
+      <div class="product-detail-image-wrap"><img id="productImage" class="product-detail-image" src="${first?.image || product.image}" alt="${escapeHtml(product.name)}" onerror="this.src='/kori-logo.jpeg'"></div>
+      <div class="product-detail-info"><span class="badge">${escapeHtml(product.category)}</span><h1>${escapeHtml(product.name)}</h1>
+        <p id="selectedPrice" class="product-detail-price">$${Number(first?.price || product.price).toFixed(2)}</p>
+        <p class="product-description">${escapeHtml(product.description)}</p>
+        <label class="variant-label" for="variantSelect">Choose an option</label>
+        <select id="variantSelect" class="variant-select" onchange="updateSelectedVariant(${product.id})">
+          ${variants.map((variant) => `<option value="${escapeHtml(variant.sku)}">${escapeHtml(variant.option)} — $${Number(variant.price).toFixed(2)}</option>`).join("")}
+        </select>
+        <p id="selectedInventory" class="stock">${Number(first?.inventory || 0).toLocaleString()} available</p>
+        <div class="product-info-box"><h3>Shipping Estimate</h3><p>${escapeHtml(product.shipping)}</p></div>
+        <div class="product-info-box"><h3>What’s Included</h3><ul>${(product.whatsInBox || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
+        <div class="product-info-box"><h3>Product Details</h3><p><strong>SKU:</strong> <span id="selectedSku">${escapeHtml(first?.sku)}</span></p><p><strong>Category:</strong> ${escapeHtml(product.category)}</p></div>
+        <div class="product-actions"><button onclick="addToCart(${product.id})">Add to Cart</button><button class="buy-now" onclick="buyNow(${product.id})">Buy Now</button></div>
+      </div></div></section>
+    <section class="related-section"><h2>Related Products</h2><div class="related-products">
+      ${related.map((item) => `<div class="related-card"><img src="${item.image}" alt="${escapeHtml(item.name)}" onerror="this.src='/kori-logo.jpeg'"><h3>${escapeHtml(item.name)}</h3><p>From $${Number(item.price).toFixed(2)}</p><a href="/product.html?id=${item.id}">Choose Options</a></div>`).join("")}
+    </div></section>`;
 }
 
 async function loadProductPage() {
-  const productPage = document.getElementById("productPage");
-
   try {
     const res = await fetch("/api/products");
-
-    if (!res.ok) {
-      throw new Error("Products API failed");
-    }
-
+    if (!res.ok) throw new Error("Products API failed");
     products = await res.json();
-
-    const product = getProductByParam(productParam);
-
-    renderProductPage(product);
+    const validSkus = new Set(products.flatMap((product) => (product.variants || []).map((variant) => variant.sku)));
+    cart = cart.filter((item) => validSkus.has(item.sku));
+    saveCart();
+    renderProductPage(getProductByParam(productParam));
     updateCartCount();
   } catch (error) {
     console.error("Product page failed to load:", error);
-
-    if (productPage) {
-      productPage.innerHTML = `
-        <section class="product-detail-card">
-          <h1>Product failed to load</h1>
-          <p>Please refresh the page or try again soon.</p>
-          <a class="track-link" href="/">Return to Store</a>
-        </section>
-      `;
-    }
+    document.getElementById("productPage").innerHTML = `<section class="product-detail-card"><h1>Product failed to load</h1><a class="track-link" href="/">Return to Store</a></section>`;
   }
 }
 
